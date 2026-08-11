@@ -1,23 +1,36 @@
 /* ------------------------------------------------------------------ *
- * "Built for the entire Private Market Ecosystem" — v8 R3.
+ * "Built for the entire Private Market Ecosystem" — v8 R4.
  *
- * Box-free scroll-fade design. A tall runway scrolls past a sticky
- * two-column viewport: audiences as a vertical list on the left, one
- * audience's text on the right. Scrolling crossfades the text — the
- * outgoing block drifts up and fades, the incoming one rises in.
- * No cards, borders or fills; type, whitespace and motion only.
+ * One-fold scroll-fade. The sticky viewport now holds the heading AND
+ * the two-column grid (rail left, one audience's box-free text right),
+ * sized to the viewport minus the header — so heading, categories and
+ * text are all visible together while the runway scrolls past.
+ * Category changes use the Apollo crossfade: text fades out in place
+ * and the next fades in — no translate. No subheading, no boxes.
  * ------------------------------------------------------------------ */
 
 .segf {
-  padding: clamp(56px, 6vw, 84px) 0 0;
   background-color: #fcfcfc;
+}
+
+.segf-runway {
+  position: relative;
+}
+.segf-sticky {
+  position: sticky;
+  top: 64px;                       /* just below the slim header */
+  height: calc(100dvh - 64px);     /* the whole section = one fold */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(16px, 3vh, 40px) 0;
+  box-sizing: border-box;
 }
 
 .segf-head {
   text-align: center;
   max-width: 1200px;
-  /* The usual decent air between the h2 block and the section body. */
-  margin: 0 auto clamp(36px, 4.5vw, 64px);
+  margin: 0 auto clamp(24px, 4vh, 48px);
   padding: 0 24px;
 }
 .segf-h2 {
@@ -26,14 +39,6 @@
   line-height: 1.2;
   color: #1a1a1a;
   max-width: 900px;
-  margin: 0 auto 14px;
-}
-.segf-sub {
-  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
-  color: #5f6368;
-  font-family: var(--font-family-sans);
-  line-height: 1.6;
-  max-width: 620px;
   margin: 0 auto;
 }
 .segf-sr {
@@ -42,19 +47,6 @@
   padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0);
   white-space: nowrap; border: 0;
-}
-
-/* ---- Runway + sticky viewport ------------------------------------- */
-.segf-runway {
-  position: relative;
-}
-.segf-sticky {
-  position: sticky;
-  /* Below the ~64px header, roughly centring the viewport in the fold. */
-  top: clamp(72px, 12vh, 130px);
-  height: min(560px, 72vh);
-  display: flex;
-  align-items: center;
 }
 
 .segf-grid {
@@ -84,10 +76,10 @@
   background: none;
   border: none;
   border-left: 2px solid #E5E7EB;
-  padding: 10px 16px;
+  padding: 9px 16px;
   cursor: pointer;
   font-family: var(--font-family-sans);
-  font-size: 0.98rem;
+  font-size: 0.96rem;
   font-weight: 400;
   color: #9CA3AF;
   white-space: nowrap;
@@ -104,7 +96,7 @@
 .segf-panel {
   position: relative;
   /* Reserve the tallest text's height so the layout never jumps. */
-  min-height: 380px;
+  min-height: min(360px, 48vh);
 }
 
 .segf-text {
@@ -115,27 +107,23 @@
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity .5s ease, transform .5s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
+  /* Apollo-style crossfade: pure in-place fade, no translate. */
+  transition: opacity .45s ease;
+  will-change: opacity;
 }
-/* The beautiful bit: departed text drifts up as it fades, upcoming text
-   waits below — so scrolling reads as one continuous rising stream. */
-.segf-text.is-before { transform: translateY(-34px); }
-.segf-text.is-after  { transform: translateY(34px); }
 .segf-text.is-active {
   opacity: 1;
-  transform: none;
   pointer-events: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .segf-text { transition: opacity .3s ease; transform: none !important; }
+  .segf-text { transition: opacity .25s ease; }
 }
 
 .segf-title {
   font-family: var(--font-family-serif);
   font-weight: 400;
-  font-size: clamp(1.5rem, 2.1vw, 2rem);
+  font-size: clamp(1.4rem, 2vw, 1.9rem);
   line-height: 1.25;
   letter-spacing: -0.01em;
   color: #111827;
@@ -144,16 +132,16 @@
 
 .segf-line {
   font-family: var(--font-family-sans);
-  font-size: 1.02rem;
-  line-height: 1.55;
+  font-size: 1rem;
+  line-height: 1.5;
   color: #5f6368;
-  margin: 0 0 clamp(18px, 2.5vh, 28px);
+  margin: 0 0 clamp(14px, 2vh, 22px);
   max-width: 560px;
 }
 
 .segf-rows {
   list-style: none;
-  margin: 0 0 22px;
+  margin: 0 0 18px;
   padding: 0;
   max-width: 560px;
 }
@@ -161,10 +149,10 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 13px 0;
+  padding: 11px 0;
   border-top: 1px solid #E9EBF0;
   font-family: var(--font-family-sans);
-  font-size: 0.96rem;
+  font-size: 0.95rem;
   line-height: 1.45;
   color: #202124;
 }
@@ -177,11 +165,11 @@
   gap: 6px;
   font-family: var(--font-family-sans);
   font-weight: 600;
-  font-size: 0.98rem;
+  font-size: 0.96rem;
   color: #0b3d91;
   text-decoration: none;
   width: fit-content;
-  padding: 6px 0; /* generous tap area without a box */
+  padding: 6px 0;
 }
 .segf-link:hover { text-decoration: underline; }
 
@@ -192,12 +180,8 @@
     gap: 0;
     align-items: start;
   }
-  /* The rail can't share a phone screen with the text; the text block's own
-     title carries the category name, so the rail goes. */
+  /* The text block's own title carries the category name on phones. */
   .segf-rail { display: none; }
-  .segf-sticky {
-    top: 76px;
-    height: min(520px, 68vh);
-  }
-  .segf-panel { min-height: 420px; }
+  .segf-sticky { top: 60px; height: calc(100dvh - 60px); }
+  .segf-panel { min-height: min(420px, 60vh); }
 }

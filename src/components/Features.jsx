@@ -1,85 +1,97 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import FeatureMockup from './FeatureMockup';
+import {
+    Search, FileCheck2, BarChart3, GitBranch, Database,
+    Building2, Users, TrendingUp, Landmark, Scale, ShieldCheck,
+    LineChart, CalendarDays, Filter, Bell, Smartphone,
+    Braces, Download, Server,
+} from 'lucide-react';
 import './FeaturesTabs.css';
 
-// Offerings content - sourced from the "Tracxn Homepage - Offerings Section"
-// doc (Tab 1 descriptors + bullets; headings picked from the Tab 2 options).
+/**
+ * Offerings — v8 R4: the Apollo "Turn hours of prospecting into minutes"
+ * section, rebuilt 1:1 from the screen recording — same layout, same colours
+ * (sampled from the frames), our fonts (PT Serif headline, Roboto elsewhere).
+ *
+ * Full-width row of equal pills (uppercase, letter-spaced); the active pill
+ * takes its offering's pastel colour. Below, a two-column body on white:
+ * big serif headline + button pair top-left, icon bullets bottom-left, and a
+ * large dark rounded media card on the right. Switching tabs crossfades the
+ * body in place (no slide) — the transition visible in the recording. The
+ * active pill carries a thin fill bar that auto-advances the cycle.
+ */
+
 const features = [
     {
         id: '01',
         title: 'Rich Firmographic Data',
         heading: '8M+ companies. One data layer deep enough to trust.',
-        subtext: 'The deepest company data layer in private markets - human-verified, not just scraped.',
+        pill: '#F7FD26',        // Apollo neon yellow
+        cardBg: '#3F3935',      // dark warm brown
         bullets: [
-            '8M+ companies across 3,000+ sectors and 100+ countries',
-            'Full profiles: funding, cap tables, founders, and growth',
-            'Tracxn Score benchmarks every company against 1M+ peers'
+            { icon: Building2, text: '8M+ companies across 3,000+ sectors and 100+ countries' },
+            { icon: Users, text: 'Full profiles: funding, cap tables, founders, and growth' },
+            { icon: TrendingUp, text: 'Tracxn Score benchmarks every company against 1M+ peers' },
         ],
-        color: '#202124',
-        bg: '#f2f0e6',
-        animationType: 'scroll'
+        media: { type: 'video', src: 'https://cdn.tracxn.com/marketing-campaigns/Homepage_illustrations_iYYiQe2VRsrWsrBtEFYTi.mp4' },
     },
     {
         id: '02',
         title: 'Deep Regulatory Data',
         heading: 'Every filing. Every registry. One searchable format.',
-        subtext: 'Regulatory filings, decoded and made searchable - built for due diligence at scale.',
+        pill: '#A8A0E6',        // periwinkle
+        cardBg: '#363048',      // dark purple
         bullets: [
-            'Sourced from official registries - MCA, Companies House, SEC',
-            'Structured filings: financials, directors, and shareholding',
-            'Standardized across jurisdictions for like-for-like comparison'
+            { icon: Landmark, text: 'Sourced from official registries - MCA, Companies House, SEC' },
+            { icon: Scale, text: 'Structured filings: financials, directors, and shareholding' },
+            { icon: ShieldCheck, text: 'Standardized across jurisdictions for like-for-like comparison' },
         ],
-        color: '#202124',
-        bg: '#dff3ff',
-        animationType: 'float'
+        media: { type: 'image', src: '/images/feature-1.png' },
     },
     {
         id: '03',
-        title: 'Sector Market & Reports',
+        title: 'Markets move quarterly. So do our reports.',
+        titleTab: 'Sector Market & Reports',
         heading: 'Markets move quarterly. So do our reports.',
-        subtext: '1,000+ sector reports, updated every quarter.',
+        pill: '#FFB3F3',        // pink
+        cardBg: '#4C2827',      // dark maroon
         bullets: [
-            'Analyst intelligence on funding, market sizing, and exits',
-            'Covers 2,500+ sectors and 30+ geographies, refreshed quarterly',
-            'Custom reports on niche or emerging themes, on request'
+            { icon: LineChart, text: 'Analyst intelligence on funding, market sizing, and exits' },
+            { icon: BarChart3, text: 'Covers 2,500+ sectors and 30+ geographies, refreshed quarterly' },
+            { icon: CalendarDays, text: 'Custom reports on niche or emerging themes, on request' },
         ],
-        color: '#202124',
-        bg: '#ECFAE5',
-        animationType: 'scroll'
+        media: { type: 'image', src: '/images/feature-2.png' },
     },
     {
         id: '04',
         title: 'Workflow Solutions',
         heading: 'Stop juggling five tools to run one deal.',
-        subtext: 'From sourcing to tracking to closing - one workspace for the whole deal lifecycle.',
+        pill: '#C6DCFB',        // light blue
+        cardBg: '#202929',      // near-black green
         bullets: [
-            'Source proactively - screen 7.7M+ companies across 100+ filters',
-            'Track automatically - funding, M&A, and news roll in on their own',
-            'Manage the full pipeline in one shared view, on web or mobile'
+            { icon: Filter, text: 'Source proactively - screen 7.7M+ companies across 100+ filters' },
+            { icon: Bell, text: 'Track automatically - funding, M&A, and news roll in on their own' },
+            { icon: Smartphone, text: 'Manage the full pipeline in one shared view, on web or mobile' },
         ],
-        color: '#202124',
-        bg: '#F5DAD2',
-        animationType: 'float'
+        media: { type: 'image', src: '/images/feature-3.png' },
     },
     {
         id: '05',
         title: 'Data Solutions',
         heading: 'However you need it - API, export, or custom build.',
-        subtext: 'Your data, delivered your way.',
+        pill: '#BFE8C5',        // pastel mint (5th, in the same family)
+        cardBg: '#26332B',      // dark green
         bullets: [
-            'Full API access and bulk exports for your internal systems',
-            'Custom data slices built around your exact filters',
-            'Pre-built datasets and PoC packs to validate fit fast'
+            { icon: Braces, text: 'Full API access and bulk exports for your internal systems' },
+            { icon: Download, text: 'Custom data slices built around your exact filters' },
+            { icon: Server, text: 'Pre-built datasets and PoC packs to validate fit fast' },
         ],
-        color: '#202124',
-        bg: '#EDE7F6',
-        animationType: 'float'
-    }
+        media: { type: 'image', src: '/images/feature-4.png' },
+    },
 ];
 
-// Dwell per tab before it auto-advances. The loading bar fills over exactly
-// this window and its `animationend` is what triggers the advance, so the bar
-// and the advance can never drift apart (and pausing the bar pauses both).
+// Tab labels: prefer the short tab title where the card heading is long.
+const tabLabel = (f) => f.titleTab || f.title;
+
 const DWELL_MS = 6500;
 
 const Features = () => {
@@ -89,9 +101,8 @@ const Features = () => {
 
     const go = useCallback((i) => setActive(((i % count) + count) % count), [count]);
 
-    // Auto-advance is driven by the active tab's loading bar finishing (see
-    // onAnimationEnd below). This effect only exists so that, if the bar can't
-    // animate (reduced motion), the section still cycles on a plain timer.
+    // Reduced-motion fallback: the pill fill bar can't animate, so cycle on a
+    // plain timer instead.
     const reduced = useRef(false);
     useEffect(() => {
         reduced.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -116,7 +127,7 @@ const Features = () => {
                     onMouseEnter={() => setPaused(true)}
                     onMouseLeave={() => setPaused(false)}
                 >
-                    {/* Horizontal tab bar */}
+                    {/* Full-width pill row */}
                     <div className="ftx-tabs" role="tablist" aria-label="Tracxn offerings">
                         {features.map((f, i) => {
                             const isActive = i === active;
@@ -128,12 +139,12 @@ const Features = () => {
                                     aria-controls={`ftx-panel-${f.id}`}
                                     id={`ftx-tab-${f.id}`}
                                     className={`ftx-tab${isActive ? ' is-active' : ''}`}
+                                    style={isActive ? { background: f.pill } : undefined}
                                     onClick={() => go(i)}
                                     onFocus={() => setPaused(true)}
                                     onBlur={() => setPaused(false)}
                                 >
-                                    <span className="ftx-tab-num">{f.id}</span>
-                                    <span className="ftx-tab-title">{f.title}</span>
+                                    <span className="ftx-tab-title">{tabLabel(f)}</span>
                                     {isActive && (
                                         <span
                                             key={active}
@@ -150,62 +161,72 @@ const Features = () => {
                         })}
                     </div>
 
-                    {/* One stretched panel; the track slides sideways between offerings. */}
-                    <div className="ftx-viewport">
-                        <div
-                            className="ftx-track"
-                            style={{ transform: `translateX(-${active * 100}%)` }}
-                        >
-                            {features.map((f, i) => (
-                                <div
-                                    key={f.id}
-                                    className="ftx-slide"
-                                    role="tabpanel"
-                                    id={`ftx-panel-${f.id}`}
-                                    aria-labelledby={`ftx-tab-${f.id}`}
-                                    aria-hidden={i !== active}
-                                >
-                                    <div className="ftx-card" style={{ background: f.bg, color: f.color }}>
-                                        <div className="ftx-card-copy">
-                                            <h3 className="ftx-card-title" style={{ color: f.color }}>
-                                                {f.heading}
-                                            </h3>
-                                            <p className="ftx-card-desc" style={{ color: f.color }}>
-                                                {f.subtext}
-                                            </p>
-                                            <ul className="ftx-bullets">
-                                                {f.bullets.map((b, bi) => (
-                                                    <li key={bi} className="ftx-bullet">
-                                                        <span className="ftx-bullet-check" aria-hidden="true">
-                                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-                                                                <path d="M5 12l4 4L19 7" stroke="#0b3d91" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                                                            </svg>
-                                                        </span>
-                                                        <span>{b}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <button
-                                                className="ftx-btn"
-                                                style={{ color: f.bg, backgroundColor: f.color }}
-                                            >
-                                                Learn more
-                                            </button>
-                                        </div>
+                    {/* Crossfading body — panels stacked, active one fades in place */}
+                    <div className="ftx-stage">
+                        {features.map((f, i) => (
+                            <div
+                                key={f.id}
+                                className={`ftx-panel${i === active ? ' is-active' : ''}`}
+                                role="tabpanel"
+                                id={`ftx-panel-${f.id}`}
+                                aria-labelledby={`ftx-tab-${f.id}`}
+                                aria-hidden={i !== active}
+                            >
+                                <div className="ftx-copy">
+                                    <h3 className="ftx-headline">{f.heading}</h3>
 
-                                        <div className="ftx-card-media">
-                                            <div className="ftx-media-inner">
-                                                <FeatureMockup
-                                                    inView={i === active}
-                                                    type={f.animationType}
-                                                    altText={f.title}
-                                                />
-                                            </div>
-                                        </div>
+                                    <div className="ftx-ctas">
+                                        <a
+                                            href="#signup"
+                                            className="ftx-btn-dark"
+                                            tabIndex={i === active ? 0 : -1}
+                                        >
+                                            Get started for free
+                                        </a>
+                                        <a
+                                            href="#offerings"
+                                            className="ftx-btn-outline"
+                                            tabIndex={i === active ? 0 : -1}
+                                        >
+                                            Learn more
+                                        </a>
                                     </div>
+
+                                    <ul className="ftx-points">
+                                        {f.bullets.map((b, bi) => {
+                                            const Icon = b.icon;
+                                            return (
+                                                <li key={bi} className="ftx-point">
+                                                    <Icon size={19} strokeWidth={1.7} className="ftx-point-icon" aria-hidden="true" />
+                                                    <span>{b.text}</span>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
                                 </div>
-                            ))}
-                        </div>
+
+                                <div className="ftx-media" style={{ background: f.cardBg }}>
+                                    {f.media.type === 'video' ? (
+                                        <video
+                                            className="ftx-media-shot"
+                                            src={f.media.src}
+                                            autoPlay
+                                            muted
+                                            loop
+                                            playsInline
+                                            aria-label={`${tabLabel(f)} demo`}
+                                        />
+                                    ) : (
+                                        <img
+                                            className="ftx-media-shot"
+                                            src={f.media.src}
+                                            alt={`${tabLabel(f)} interface`}
+                                            loading="lazy"
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

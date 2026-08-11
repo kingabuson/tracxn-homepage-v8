@@ -167,24 +167,21 @@ const CustomerSegments = () => {
 
     return (
         <section className="segf">
-            <div className="segf-head">
-                <h2 className="segf-h2">
-                    Built for the entire{' '}
-                    <span className="text-gradient-testimonial">Private Market Ecosystem</span>
-                </h2>
-                <p className="segf-sub">
-                    Investors, corporates, banks, NBFCs, and governments run their
-                    private-market work on Tracxn.
-                </p>
-            </div>
-
-            {/* Tall scroll runway; the grid inside stays stuck while it passes. */}
+            {/* Tall scroll runway; everything — heading, rail and text — lives
+                inside the sticky viewport so the whole section stays in one
+                fold while the runway scrolls past. */}
             <div
                 ref={scrollRef}
                 className="segf-runway"
                 style={{ height: `calc(${count * STEP_VH}vh)` }}
             >
                 <div ref={stickyRef} className="segf-sticky">
+                    <div className="segf-head">
+                        <h2 className="segf-h2">
+                            Built for the entire{' '}
+                            <span className="text-gradient-testimonial">Private Market Ecosystem</span>
+                        </h2>
+                    </div>
                     <div className="segf-grid">
                         {/* Left: vertical list of audiences */}
                         <nav className="segf-rail" aria-label="Audiences">
