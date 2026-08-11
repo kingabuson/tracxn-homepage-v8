@@ -1,0 +1,240 @@
+/* ==========================================================================
+   Responsive layer.
+   The components are inline-styled, so any rule that has to beat an element
+   `style` attribute needs `!important`. Where a component already sizes itself
+   fluidly (the hero headline, .cov-h2), the fix lives in the component instead
+   — overriding a clamp with a fixed value here is what broke the H1 at 360px.
+   Breakpoints: 1024 / 900 / 768 / 560.
+   ========================================================================== */
+
+/* Global overflow + media safety.
+   Use `clip` (not `hidden`): `hidden` establishes a scroll container on the
+   ancestor and breaks `position: sticky` for descendants (the offerings tab
+   rail). `clip` prevents horizontal scroll without that side effect. */
+html,
+body,
+#root {
+    overflow-x: clip;
+}
+
+img,
+video,
+svg {
+    max-width: 100%;
+}
+
+/* Removes the ~300ms tap delay touch browsers add while waiting to see if a
+   tap is a double-tap-to-zoom. */
+a,
+button,
+[role='button'] {
+    touch-action: manipulation;
+}
+
+/* --- Section headings ---
+   Fluid from 1.65rem up to the 3.5rem desktop size, which it reaches at
+   ~1218px — so desktop renders as before. `!important` is unavoidable here:
+   several sections hard-code `fontSize: '3.5rem'` inline, which would otherwise
+   stay 56px on a 375px screen. */
+h2 {
+    font-size: clamp(1.65rem, 4.6vw, 3.5rem) !important;
+}
+
+@media (max-width: 768px) {
+    h3 {
+        font-size: 1.4rem !important;
+    }
+}
+
+/* --- Header: swap desktop nav for a hamburger --- */
+.hdr-burger {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .hdr-desktop-nav {
+        display: none !important;
+    }
+
+    /* 44×44 is the Apple HIG minimum; the icon stays 24px inside it. */
+    .hdr-burger {
+        display: inline-flex !important;
+        width: 44px;
+        height: 44px;
+    }
+
+    /* In landscape the open panel can outgrow the viewport — without this the
+       last items and the sign-up button are unreachable. */
+    .hdr-mobile-panel {
+        max-height: calc(100dvh - 72px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+}
+
+/* --- Hero (v5g layout: light/dark toggle + curation video) --- */
+@media (max-width: 900px) {
+    /* Desktop puts copy + video side by side and pins the panel to the
+       viewport height. Once stacked, that fixed height would crop the taller
+       content — so let the panel grow and drop the video below the copy. */
+    .hero5b-panel {
+        min-height: auto !important;
+    }
+
+    .hero5b-top-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 28px !important;
+    }
+
+    .hero5b-media {
+        justify-content: stretch !important;
+    }
+
+    .hero5b-media > div {
+        max-width: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* The hero stat row is a 4-up grid on desktop; two-up reads better once
+       the column narrows. */
+    .hero5b-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 22px 16px !important;
+    }
+}
+
+@media (max-width: 900px) {
+    /* The hero's light/dark toggle sits at the top-right of the panel, which
+       is exactly where the header collapses its hamburger — the burger wins
+       the stacking order and the toggle becomes unreachable. Drop it below
+       the header bar, where the hero still has clear space above the H1. */
+    .hero5b-panel [role="switch"] {
+        top: 74px !important;
+        right: 16px !important;
+    }
+}
+
+@media (max-width: 560px) {
+    /* v7d: the hero CTA is now the shared email form, which stacks itself below
+       520px. All this row has to do is stop constraining its width. */
+    .hero5b-cta {
+        align-items: stretch !important;
+    }
+}
+
+/* --- Private Market Ecosystem card grid (v5g) ---
+   4-up on desktop; step down to 2-up, then 1-up so the 8 cards never get
+   too narrow to read. */
+@media (max-width: 1024px) {
+    .cs-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .cs-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* --- Offerings (Features): drop the sticky rail, stack cards --- */
+@media (max-width: 900px) {
+    .ft-wrap {
+        flex-direction: column !important;
+        gap: 24px !important;
+    }
+
+    .ft-rail {
+        display: none !important;
+    }
+
+    .ft-col {
+        width: 100% !important;
+        gap: 28px !important;
+        padding-bottom: 16px !important;
+    }
+
+    .ft-col > div {
+        min-height: 0 !important;
+    }
+
+    /* Desktop lays copy + media side by side; stack them on mobile and let the
+       card size to its content instead of the near-viewport min-height. */
+    .ft-card {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 24px !important;
+        padding: 24px !important;
+        min-height: 0 !important;
+    }
+}
+
+/* --- Tracxn AI Suite (v5b pop-up panel): stack cards on mobile --- */
+@media (max-width: 768px) {
+    .ai5b-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+}
+
+/* --- Video testimonials: stack the expanding row --- */
+@media (max-width: 768px) {
+    .vt-row {
+        flex-direction: column !important;
+        height: auto !important;
+    }
+
+    .vt-row > * {
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        min-height: 220px !important;
+    }
+
+    .vt-row [style*="rotate(-90deg)"] {
+        transform: none !important;
+    }
+}
+
+/* --- Footer --- */
+@media (max-width: 1024px) {
+    .footer-cols {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .footer-cols {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 900px) {
+    /* Link rows become 44px tap targets, flush like an iOS table view — the
+       6px gap is dropped since full-width rows don't need separating. */
+    .footer-cols ul {
+        gap: 0 !important;
+    }
+
+    .footer-cols a {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+    }
+}
+
+/* Social icons are 20px glyphs, so the link needs its own tap target. The
+   negative margin keeps the row optically aligned despite the added padding. */
+.footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.footer-social {
+    margin-left: -12px;
+    margin-right: -12px;
+}

@@ -1,0 +1,234 @@
+/* ------------------------------------------------------------------ *
+ * Coverage section (v7e) — the map-led block ported from the
+ * coverage-map-variants prototype. Section chrome (heading, spacing,
+ * container width) follows the v7 page; everything inside the card is
+ * the prototype's own treatment, retinted to the page's tokens.
+ * ------------------------------------------------------------------ */
+
+.cov7 {
+  width: 100%;
+  /* Trimmed so the heading + map + panel clear a single viewport (previously
+     the heading alone pushed the map half off-screen). */
+  padding: clamp(36px, 4vw, 60px) clamp(18px, 5vw, 72px);
+  display: flex;
+  justify-content: center;
+  background-color: var(--color-background);
+}
+.cov7-inner { width: 100%; max-width: 1200px; }
+
+.cov7-h2 {
+  font-family: var(--font-family-serif);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.12;
+  color: var(--color-text-main);
+  letter-spacing: -0.01em;
+  text-align: left;
+  max-width: none;
+  margin: 0;
+}
+.cov7-desc {
+  font-size: clamp(14px, 1.25vw, 16px);
+  line-height: 1.55;
+  color: var(--color-text-light);
+  /* wider measure keeps it to ~2 lines so it doesn't eat the map's headroom */
+  max-width: 82ch;
+  margin: 12px 0 0;
+}
+
+/* ---------- layout ---------- *
+ * No card wraps the section any more: the map sits free on the page and only
+ * the figures panel is boxed. */
+
+.cov7-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  /* row 1 = heading block, row 2 = map. The panel spans both. */
+  grid-template-rows: auto auto;
+  column-gap: clamp(28px, 4vw, 56px);
+  row-gap: clamp(18px, 2.2vw, 28px);
+  /* top-align, not centre: the stats panel is much taller than the map, and
+     centring pushed the map halfway down the panel's height — below the fold. */
+  align-items: start;
+}
+
+/* Heading sits in the left column only, so the figures panel beside it can
+   start at the very top of the section rather than below the copy. */
+.cov7-headcol {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+/* ---------- map ---------- */
+
+.cov7-mapcol { position: relative; min-width: 0; grid-column: 1; grid-row: 2; }
+/* a whisper of brand colour behind the free-standing map, so it reads as lit
+   rather than floating on flat page background */
+.cov7-mapcol::before {
+  content: "";
+  position: absolute;
+  inset: -14% -6% -6% -8%;
+  z-index: 0;
+  background:
+    radial-gradient(58% 62% at 40% 44%, rgba(26, 115, 232, .14), transparent 70%),
+    radial-gradient(44% 54% at 80% 72%, rgba(102, 204, 255, .16), transparent 72%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+.cov7-map { position: relative; z-index: 1; display: flex; justify-content: center; }
+/* Size the map by height so the whole section still fits one screen; width follows
+   the 1010:655 aspect and centres in the column (never wider than the column).
+   Moving the heading out of the panel's row freed ~150px, so the map runs bigger
+   than before while the section height is unchanged. */
+.cov7-svg { display: block; height: clamp(280px, 52vh, 540px); width: auto; max-width: 100%; }
+.cov7-svg path {
+  fill: #dde5f0;
+  stroke: #ffffff;
+  stroke-width: .8;
+  cursor: pointer;
+  transition: fill .25s ease;
+}
+.cov7-svg path:hover { fill: #8fc0f5; }
+.cov7-svg path.is-lit,
+.cov7-svg path.is-lit:hover { fill: var(--color-primary); }
+
+.cov7-hint { margin-top: 12px; font-size: 12.5px; color: #9aa4b2; }
+
+/* ---------- search ---------- */
+
+.cov7-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.cov7-search { position: relative; margin-bottom: 16px; }
+.cov7-field {
+  display: flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 6px 0 12px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+.cov7-field:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, .14);
+}
+.cov7-field > svg { color: #9aa4b2; flex: none; }
+.cov7-field input {
+  flex: 1; min-width: 0;
+  /* Stretch to the field's full 44px. The parent centres its children, which
+     left the input itself only ~19px tall — the visible box looked tappable
+     but its top and bottom 12px were dead space that did not focus anything.
+     Stretching makes the real hit area match the drawn control. */
+  align-self: stretch;
+  border: 0; outline: none; background: none;
+  /* 16px, not the prototype's 13.5 — anything smaller makes iOS zoom the page
+     on focus. */
+  font: 400 16px/1 var(--font-family-sans);
+  color: var(--color-text-main);
+}
+.cov7-field input::placeholder { color: #9aa4b2; }
+.cov7-clear {
+  flex: none;
+  display: grid; place-items: center;
+  width: 32px; height: 32px;
+  border: 0; border-radius: 6px; background: none;
+  color: #9aa4b2; cursor: pointer;
+}
+.cov7-clear:hover { background: #f1f4f9; color: var(--color-text-main); }
+
+.cov7-results {
+  position: absolute; z-index: 20;
+  top: calc(100% + 6px); left: 0; right: 0;
+  max-height: 264px; overflow-y: auto;
+  margin: 0; padding: 5px; list-style: none;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: 0 14px 34px -18px rgba(10, 31, 68, .38);
+}
+.cov7-results li {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding: 8px 10px; border-radius: 7px;
+  font-size: 13px; color: var(--color-text-main);
+  cursor: pointer;
+}
+.cov7-results li[aria-selected="true"], .cov7-results li:hover { background: #eef4fd; }
+.cov7-results li b { font-weight: 500; }
+.cov7-kind {
+  flex: none; font-size: 10.5px; letter-spacing: .04em;
+  text-transform: uppercase; color: #9aa4b2;
+}
+.cov7-results .cov7-empty {
+  display: block; padding: 10px;
+  font-size: 12.5px; line-height: 1.5; color: var(--color-text-light); cursor: default;
+}
+.cov7-results .cov7-empty:hover { background: none; }
+
+/* ---------- figures ---------- */
+
+.cov7-panel {
+  /* Spans the heading row and the map row, so its top edge lines up with the
+     top of the H2 rather than starting below the section copy. */
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  /* The panel is the only boxed thing in the section now. */
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: clamp(20px, 2vw, 26px);
+  box-shadow: 0 1px 3px rgba(10, 31, 68, .05), 0 20px 44px -32px rgba(10, 31, 68, .35);
+}
+.cov7-head { padding-bottom: 12px; border-bottom: 1px solid var(--color-border); }
+.cov7-name { font: 500 18px/1.2 var(--font-family-sans); color: #0a1f44; }
+.cov7-lede { font-size: 12.5px; color: var(--color-text-light); margin-top: 4px; }
+.cov7-lede em { font-style: normal; color: var(--color-primary); }
+
+.cov7-rows { display: flex; flex-direction: column; }
+.cov7-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid #f0f3f8;
+}
+.cov7-row:last-child { border-bottom: 0; }
+.cov7-row span { font-size: 13px; color: var(--color-text-light); }
+.cov7-row b {
+  font: 500 14.5px/1 var(--font-family-sans);
+  color: #0a1f44;
+  font-variant-numeric: tabular-nums;
+}
+.cov7-row.is-empty b { color: #b6bec9; font-weight: 400; }
+
+.cov7-ason { margin-top: 14px; font-size: 12px; font-style: italic; color: #9aa4b2; }
+
+@media (max-width: 1040px) {
+  /* Stacked: drop the explicit row/column placement and let the three blocks
+     flow head → map → panel in source order. */
+  .cov7-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+  .cov7-headcol,
+  .cov7-mapcol,
+  .cov7-panel { grid-column: 1; grid-row: auto; }
+  /* The map has the full column here, so size it by width again. */
+  .cov7-svg { height: auto; width: 100%; }
+}
+@media (max-width: 768px) {
+  .cov7-h2 { text-align: center; }
+  .cov7-desc { margin-left: auto; margin-right: auto; text-align: center; }
+  /* Country paths are a few px wide at this size and the whole control is
+     hover-driven, so the search box is the real interaction on touch — the
+     hint would otherwise promise something the device can't do. */
+  .cov7-hint { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cov7-svg path { transition: none; }
+}

@@ -1,0 +1,242 @@
+/* Features — Apollo-style horizontal tabs (v8)
+   ------------------------------------------------------------------
+   A horizontal tab bar sits above one full-width, "stretched" content
+   panel. The panels live on a horizontal track that slides between
+   offerings (translateX), so switching a tab scrolls the card sideways.
+   The active tab carries a loading bar that fills over the dwell time
+   and then auto-advances to the next tab, looping — the scroll + load
+   behaviour borrowed from Apollo's "Turn hours of prospecting" section. */
+
+.ftx {
+  padding: 80px 0 80px;
+  background-color: var(--color-background);
+}
+
+.ftx-head {
+  text-align: center;
+  max-width: 860px;
+  margin: 0 auto 44px;
+}
+
+.ftx-h2 {
+  font-size: 3.4rem;
+  line-height: 1.15;
+  margin: 0;
+  font-family: "PT Serif", serif;
+  font-weight: 400;
+  color: #111827;
+}
+
+/* ---- Tab bar ------------------------------------------------------ */
+.ftx-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+/* On narrow screens the five labels can't sit side by side, so the bar
+   becomes a horizontal scroller with each tab a comfortable min-width. */
+@media (max-width: 900px) {
+  .ftx-tabs {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .ftx-tabs::-webkit-scrollbar { display: none; }
+}
+
+.ftx-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  background: #F7F8FA;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family-sans);
+  color: #6B7280;
+  overflow: hidden;
+  transition: color .2s ease, background .2s ease, border-color .2s ease;
+  min-height: 56px;
+}
+
+@media (max-width: 900px) {
+  .ftx-tab { flex: 0 0 auto; min-width: 210px; scroll-snap-align: start; }
+}
+
+.ftx-tab:hover { color: #111827; border-color: #d5d9e0; }
+
+.ftx-tab.is-active {
+  color: #0a1f44;
+  background: #EAF1FF;
+  border-color: #C6D8FF;
+}
+
+.ftx-tab-num {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #9CA3AF;
+  flex-shrink: 0;
+}
+.ftx-tab.is-active .ftx-tab-num { color: #2166b0; }
+
+.ftx-tab-title {
+  font-size: 0.98rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Loading bar that fills across the active tab and triggers auto-advance */
+.ftx-tab-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #003366, #2166b0);
+}
+.ftx-tab-bar.run {
+  animation: ftx-fill linear forwards;
+}
+@keyframes ftx-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ftx-tab-bar.run { animation: none; transform: scaleX(1); }
+  .ftx-track { transition: none !important; }
+}
+
+/* ---- Sliding content panel --------------------------------------- */
+.ftx-viewport {
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+.ftx-track {
+  display: flex;
+  width: 100%;
+  transition: transform .55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.ftx-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+}
+
+.ftx-card {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 56px;
+  padding: 48px;
+  border-radius: 28px;
+  min-height: 440px;
+}
+
+.ftx-card-copy {
+  flex: 1 1 46%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  z-index: 2;
+}
+
+.ftx-card-title {
+  font-size: 1.85rem;
+  font-family: "PT Serif", serif;
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.28;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.ftx-card-desc {
+  font-size: 1.02rem;
+  margin: 0;
+  line-height: 1.5;
+  opacity: 0.85;
+  font-family: var(--font-family-sans);
+}
+
+.ftx-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ftx-bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-family: var(--font-family-sans);
+}
+.ftx-bullet-check {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(11, 61, 145, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.ftx-btn {
+  margin-top: 12px;
+  min-height: 44px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+.ftx-btn:hover { transform: translateY(-1px); }
+
+.ftx-card-media {
+  flex: 1 1 54%;
+  align-self: stretch;
+  display: flex;
+}
+.ftx-media-inner {
+  width: 100%;
+  min-height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* ---- Responsive --------------------------------------------------- */
+@media (max-width: 860px) {
+  .ftx-h2 { font-size: 2.2rem; }
+  .ftx-card {
+    flex-direction: column;
+    gap: 28px;
+    padding: 30px;
+    min-height: 0;
+  }
+  .ftx-card-media { min-height: 260px; }
+  .ftx-media-inner { min-height: 240px; }
+}
