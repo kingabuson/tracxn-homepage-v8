@@ -264,13 +264,14 @@ const sty = {
         marginBottom: '14px',
     },
     mainTitle: {
-        fontFamily: '"Roboto", sans-serif',
-        fontSize: 'clamp(40px, 6vw, 80px)',
-        fontWeight: 700,
-        letterSpacing: '-0.03em',
+        // v8: same serif voice as every other section heading (the global
+        // responsive.css h2 rule now controls the size).
+        fontFamily: '"PT Serif", serif',
+        fontWeight: 400,
+        letterSpacing: '-0.01em',
         color: '#0a2540',
         margin: 0,
-        lineHeight: 1.02,
+        lineHeight: 1.15,
     },
     claim: {
         fontFamily: '"Roboto", sans-serif',

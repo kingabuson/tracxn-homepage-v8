@@ -15,11 +15,9 @@
   /* Google Light Grey Background */
   --color-border: #dadce0;
 
-  /* Theme Gradient (Blue Palette - No Orange)
-     v7f: the lightest blue (#66CCFF) was pulled out of the moving heading
-     gradients. This one now sweeps deep navy → a mid royal-blue → deep navy, so
-     "Count On" still animates without the pale cyan highlight. */
-  --theme-gradient: linear-gradient(90deg, #003366 0%, #2166b0 50%, #003366 100%);
+  /* Theme Gradient — v8: blue-dominant sweep with a violet-purple glow passing
+     through (replaces the v7f plain navy↔royal ramp; no pale cyan). */
+  --theme-gradient: linear-gradient(90deg, #003366 0%, #2166b0 35%, #7C3AED 52%, #2166b0 68%, #003366 100%);
 
   /* Accent Colors for Features */
   --color-accent-1: #003366;
@@ -93,7 +91,8 @@ h1 {
 }
 
 h2 {
-  font-size: 3.5rem;
+  /* v8: all section h2s stepped down from 3.5rem. */
+  font-size: 2.4rem;
   line-height: 1.3;
   text-align: center;
   max-width: 900px;
@@ -168,11 +167,10 @@ button {
   animation: gradient-shift 8s linear infinite;
 }
 
-/* Specific Gradient for Testimonials (Black -> Deep Navy -> Black)
-   v7f: the light-blue midpoint (#66CCFF) is removed; the sweep now peaks on the
-   deep navy so the highlight passing through the heading is navy, not pale cyan. */
+/* Specific Gradient for Testimonials — v8: mostly black/navy (blue dominant)
+   with a violet-purple glow sweeping through the heading. */
 .text-gradient-testimonial {
-  background-image: linear-gradient(90deg, #000 0%, #003366 50%, #000 100%);
+  background-image: linear-gradient(90deg, #000 0%, #003366 28%, #2166b0 44%, #7C3AED 54%, #2166b0 64%, #003366 78%, #000 100%);
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
@@ -183,9 +181,9 @@ button {
 
 /* Shimmer Gradient for Stats */
 .text-shimmer-theme {
-  /* v7f: mostly black with a passing shimmer of deep navy — the light-blue
-     (#66CCFF) band was removed so the shimmer stays in the navy range. */
-  background-image: linear-gradient(110deg, #000 38%, #003366 50%, #000 62%);
+  /* v8: mostly black with a blue-dominant shimmer band carrying a violet-purple
+     core as it passes. */
+  background-image: linear-gradient(110deg, #000 36%, #2166b0 46%, #7C3AED 51%, #003366 57%, #000 66%);
   background-size: 250% auto;
   background-clip: text;
   -webkit-background-clip: text;

@@ -1,13 +1,13 @@
 /* ------------------------------------------------------------------ *
- * "Built for the entire Private Market Ecosystem" — v8.
+ * "Built for the entire Private Market Ecosystem" — v8 R2.
  *
- * Older offerings layout: a sticky vertical rail of audiences on the left,
- * one small offering card per audience on the right, scrolled vertically.
- * The rail highlights whichever card is in view.
+ * Older offerings design: un-numbered sticky rail left; old-language
+ * offering cards right (soft colored bg, serif title, check bullets,
+ * dark "Learn more" button; no graphics). Scroll drives the rail.
  * ------------------------------------------------------------------ */
 
 .segx {
-  padding: clamp(56px, 6vw, 84px) 0;
+  padding: clamp(48px, 5.5vw, 72px) 0;
   background-color: #fcfcfc;
 }
 .segx-inner {
@@ -18,19 +18,18 @@
 
 .segx-head {
   text-align: center;
-  margin-bottom: clamp(28px, 3.5vw, 48px);
+  margin-bottom: clamp(26px, 3vw, 42px);
 }
 .segx-h2 {
-  font-family: 'PT Serif', serif;
+  font-family: var(--font-family-serif);
   font-weight: 400;
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  line-height: 1.15;
+  line-height: 1.2;
   color: #1a1a1a;
   max-width: 900px;
-  margin: 0 auto 16px;
+  margin: 0 auto 12px;
 }
 .segx-sub {
-  font-size: clamp(1rem, 1.2vw, 1.1rem);
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
   color: #5f6368;
   font-family: var(--font-family-sans);
   line-height: 1.6;
@@ -48,15 +47,15 @@
 /* ---- Two-column grid: rail + cards -------------------------------- */
 .segx-grid {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 56px;
+  grid-template-columns: 270px 1fr;
+  gap: 52px;
   align-items: start;
 }
 
-/* Left rail — sticky vertical list of audiences */
+/* Left rail — sticky, un-numbered */
 .segx-rail {
   position: sticky;
-  top: 120px;
+  top: 110px;
   height: fit-content;
 }
 .segx-rail-list {
@@ -65,6 +64,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 .segx-rail-item {
   display: block;
@@ -73,115 +73,106 @@
   background: none;
   border: none;
   border-left: 2px solid #E5E7EB;
-  padding: 12px 16px;
+  padding: 11px 16px;
   cursor: pointer;
   font-family: var(--font-family-sans);
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 400;
   color: #9CA3AF;
-  transition: color .2s ease, border-color .2s ease, font-weight .2s ease;
+  white-space: nowrap;
+  transition: color .2s ease, border-color .2s ease;
 }
 .segx-rail-item:hover { color: #4B5563; }
 .segx-rail-item.is-active {
-  color: #0a1f44;
+  color: #111827;
   font-weight: 600;
-  border-left: 2px solid #0a1f44;
+  border-left: 2px solid #111827;
 }
 
-/* Right column — stacked offering cards */
+/* Right column — old-style offering cards */
 .segx-cards {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding-bottom: 20px;
+  gap: 26px;
+  padding-bottom: 16px;
 }
 
 .segx-card {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  background: #ffffff;
-  border: 1px solid #E7EAF0;
-  border-radius: 18px;
-  padding: 30px 32px;
-  box-shadow: 0 1px 2px rgba(10, 31, 68, 0.04);
-  transition: box-shadow .25s ease, border-color .25s ease, transform .25s ease;
-}
-.segx-card:hover {
-  border-color: #C6D8FF;
-  box-shadow: 0 18px 40px -20px rgba(10, 31, 68, 0.28);
-  transform: translateY(-2px);
+  border-radius: 28px;
+  padding: clamp(28px, 3vw, 42px);
+  color: #202124;
 }
 
-.segx-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
 .segx-card-title {
-  font-family: 'PT Serif', serif;
+  font-family: var(--font-family-serif);
   font-weight: 400;
-  font-size: 1.4rem;
+  font-size: clamp(1.35rem, 1.8vw, 1.7rem);
+  line-height: 1.28;
+  letter-spacing: -0.01em;
   color: #111827;
-  line-height: 1.25;
-}
-.segx-card-arrow {
-  color: #9CA3AF;
-  flex-shrink: 0;
-  transition: color .2s ease, transform .2s ease;
-}
-.segx-card:hover .segx-card-arrow {
-  color: #2166b0;
-  transform: translate(2px, -2px);
+  margin: 0 0 10px;
 }
 
 .segx-card-line {
-  margin: 10px 0 18px;
+  margin: 0 0 18px;
   font-family: var(--font-family-sans);
   font-size: 1rem;
   line-height: 1.5;
-  color: #5f6368;
+  color: #202124;
+  opacity: 0.85;
 }
 
 .segx-card-list {
   list-style: none;
-  margin: 0;
+  margin: 0 0 22px;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
 }
 .segx-card-item {
   display: flex;
   align-items: flex-start;
-  gap: 9px;
+  gap: 12px;
   font-family: var(--font-family-sans);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1.4;
   color: #202124;
 }
-.segx-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #2166b0;
-  margin-top: 6px;
+.segx-check {
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(11, 61, 145, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
 }
 
-/* ---- Responsive --------------------------------------------------- */
-@media (max-width: 960px) {
-  .segx-card-list { grid-template-columns: repeat(2, 1fr); }
+.segx-card-btn {
+  display: inline-block;
+  min-height: 44px;
+  padding: 11px 24px;
+  border-radius: 10px;
+  background: #202124;
+  color: #ffffff;
+  font-family: var(--font-family-sans);
+  font-weight: 600;
+  font-size: 0.98rem;
+  text-decoration: none;
+  transition: transform .2s ease;
 }
-@media (max-width: 820px) {
+.segx-card-btn:hover { transform: translateY(-1px); text-decoration: none; }
+
+/* ---- Responsive --------------------------------------------------- */
+@media (max-width: 860px) {
   .segx-grid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 22px;
   }
-  /* On phones the rail can't sit beside the cards; hide it and let the cards
-     (each titled) stand on their own, scrolled vertically. */
+  /* Rail can't sit beside the cards on phones; the titled cards stand alone. */
   .segx-rail { display: none; }
-  .segx-card-list { grid-template-columns: 1fr; }
-  .segx-card { padding: 24px; }
+  .segx-card { padding: 24px; border-radius: 20px; }
 }

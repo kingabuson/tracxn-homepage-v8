@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUpRight } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import './CustomerSegments.css';
 
 /**
- * "Built for the entire Private Market Ecosystem" — v8.
+ * "Built for the entire Private Market Ecosystem" — v8 R2.
  *
- * Reverts to the older "offerings" layout: the eight audiences are a vertical
- * list on the left (a sticky rail), and what Tracxn offers each audience sits
- * in a small card on the right. The page scrolls vertically through the cards
- * and the rail highlights whichever card is in view — the same scroll-rail
- * mechanic the Features section used before v8 moved it to horizontal tabs.
+ * The older offerings design: un-numbered vertical list of audiences on the
+ * left (sticky rail, border-left indicator — the pre-v8 Features rail), and one
+ * offering card per audience on the right in the old card language — soft
+ * colored background, serif title, check bullets, dark "Learn more" button.
+ * No per-category graphic. Scrolling the cards drives the rail highlight.
+ *
+ * "Media & Academia" is split into "Universities" and
+ * "Journalists & Publications" — nine audiences total.
  */
+
+const CARD_BGS = ['#f2f0e6', '#dff3ff', '#ECFAE5', '#F5DAD2', '#EDE7F6'];
 
 const segments = [
     {
@@ -92,19 +96,30 @@ const segments = [
         ],
     },
     {
-        id: 'media',
-        title: 'Media & Academia',
-        link: 'https://w.tracxn.com/customers/solutions-for-journalists-publications',
-        line: 'Report and research the innovation economy on data that holds up.',
+        id: 'universities',
+        title: 'Universities',
+        link: 'https://w.tracxn.com/customers',
+        line: 'Research and teach the innovation economy on data that holds up.',
         offerings: [
-            'Sourced, human-verified company data',
+            'Verified datasets for academic research',
+            'Sector taxonomies covering 3,000+ emerging markets',
+            'Funding and exit data ready to cite',
+        ],
+    },
+    {
+        id: 'journalists',
+        title: 'Journalists & Publications',
+        link: 'https://w.tracxn.com/customers/solutions-for-journalists-publications',
+        line: 'Report on startups and funding with data that holds up.',
+        offerings: [
             'Funding, M&A and IPO datasets to cite',
-            'Sector reports and trends for context',
+            'Human-verified company profiles for fact-checking',
+            'Sector reports and trend data for context',
         ],
     },
 ];
 
-const SegmentCard = ({ segment, onActive }) => {
+const SegmentCard = ({ segment, bg, onActive }) => {
     const { ref, inView } = useInView({ threshold: 0.55, rootMargin: '-15% 0px -20% 0px' });
 
     useEffect(() => {
@@ -112,29 +127,35 @@ const SegmentCard = ({ segment, onActive }) => {
     }, [inView, segment.id, onActive]);
 
     return (
-        <a
+        <article
             id={`seg-card-${segment.id}`}
             ref={ref}
             className="segx-card"
-            href={segment.link}
-            target="_blank"
-            rel="noreferrer"
+            style={{ backgroundColor: bg }}
         >
-            <div className="segx-card-head">
-                <span className="segx-card-title">{segment.title}</span>
-                <ArrowUpRight className="segx-card-arrow" size={18} strokeWidth={1.75} aria-hidden="true" />
-            </div>
+            <h3 className="segx-card-title">{segment.title}</h3>
             <p className="segx-card-line">{segment.line}</p>
             <ul className="segx-card-list">
                 {segment.offerings.map((o, i) => (
                     <li key={i} className="segx-card-item">
-                        <span className="segx-dot" aria-hidden="true" />
+                        <span className="segx-check" aria-hidden="true">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                                <path d="M5 12l4 4L19 7" stroke="#0b3d91" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </span>
                         <span>{o}</span>
                     </li>
                 ))}
             </ul>
-            <span className="segx-sr"> (opens in new tab)</span>
-        </a>
+            <a
+                className="segx-card-btn"
+                href={segment.link}
+                target="_blank"
+                rel="noreferrer"
+            >
+                Learn more<span className="segx-sr"> about Tracxn for {segment.title} (opens in new tab)</span>
+            </a>
+        </article>
     );
 };
 
@@ -151,7 +172,7 @@ const CustomerSegments = () => {
             <div className="segx-inner">
                 <div className="segx-head">
                     <h2 className="segx-h2">
-                        Built for the entire <br />
+                        Built for the entire{' '}
                         <span className="text-gradient-testimonial">Private Market Ecosystem</span>
                     </h2>
                     <p className="segx-sub">
@@ -161,7 +182,7 @@ const CustomerSegments = () => {
                 </div>
 
                 <div className="segx-grid">
-                    {/* Left: sticky vertical list of audiences */}
+                    {/* Left: sticky, un-numbered vertical list of audiences */}
                     <nav className="segx-rail" aria-label="Audiences">
                         <ul className="segx-rail-list">
                             {segments.map((s) => (
@@ -179,10 +200,15 @@ const CustomerSegments = () => {
                         </ul>
                     </nav>
 
-                    {/* Right: one small offering card per audience, scrolled vertically */}
+                    {/* Right: one old-style offering card per audience */}
                     <div className="segx-cards">
-                        {segments.map((s) => (
-                            <SegmentCard key={s.id} segment={s} onActive={setActive} />
+                        {segments.map((s, i) => (
+                            <SegmentCard
+                                key={s.id}
+                                segment={s}
+                                bg={CARD_BGS[i % CARD_BGS.length]}
+                                onActive={setActive}
+                            />
                         ))}
                     </div>
                 </div>
