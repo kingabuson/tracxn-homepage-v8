@@ -158,7 +158,11 @@ const styles = {
         // sticky bar in normal flow, so the hero fills the remaining viewport.
         maxWidth: 'none',
         margin: 0,
-        minHeight: 'calc(100dvh - 80px)',
+        // Reserve for the ~64px sticky header plus a ~20px cushion. Because the
+        // inner uses space-between, the "Built for" chips are pinned to the panel
+        // bottom; this cushion keeps them ~30px inside the fold even while the
+        // entrance animation nudges them down, so they never crop.
+        minHeight: 'calc(100dvh - 84px)',
         borderRadius: 0,
         overflow: 'hidden',
         // v5d: soft blue gradients fill the hero box — strongest toward the
@@ -194,10 +198,11 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        gap: 'clamp(28px, 4vh, 52px)',
-        // The sticky header no longer overlaps the hero, so the big top pad that
-        // used to clear a floating navbar is gone — modest headroom instead.
-        padding: 'clamp(44px, 6vh, 84px) clamp(28px, 5vw, 72px) clamp(24px, 3vh, 40px)',
+        gap: 'clamp(14px, 2vh, 32px)',
+        // Tightened so the full hero — copy, illustration, stats AND the "Built
+        // for" chips — clears the first fold on shorter laptop viewports, not
+        // just tall ones.
+        padding: 'clamp(14px, 2vh, 40px) clamp(28px, 5vw, 72px) clamp(14px, 2vh, 26px)',
     },
     topRow: {
         flex: 1,
@@ -219,12 +224,16 @@ const styles = {
         alignItems: 'center',
     },
     bannerImg: {
-        width: '100%',
-        maxWidth: '640px',
+        // Height-capped in vh so the illustration shrinks on short viewports
+        // instead of forcing the hero taller and pushing the chips below the
+        // fold. width:auto keeps it proportional under the height cap.
+        width: 'auto',
         height: 'auto',
-        maxHeight: 'min(58vh, 520px)',
+        maxWidth: '100%',
+        maxHeight: 'min(44vh, 430px)',
         objectFit: 'contain',
         display: 'block',
+        marginLeft: 'auto',
     },
     headline: {
         fontFamily: '"Roboto", -apple-system, sans-serif',
@@ -232,7 +241,7 @@ const styles = {
         fontSize: 'clamp(32px, 4.2vw, 60px)',
         lineHeight: 1.06,
         letterSpacing: '-0.025em',
-        margin: '0 0 clamp(16px, 2vw, 22px)',
+        margin: '0 0 clamp(8px, 1.2vw, 14px)',
         color: NAVY,
     },
     subhead: {
@@ -242,7 +251,7 @@ const styles = {
         lineHeight: 1.55,
         color: 'rgba(10, 31, 68, 0.78)',
         maxWidth: '520px',
-        margin: '0 0 clamp(26px, 3vw, 38px)',
+        margin: '0 0 clamp(12px, 1.5vw, 20px)',
     },
     ctaRow: {
         display: 'flex',
@@ -260,7 +269,7 @@ const styles = {
         display: 'grid',
         gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
         gap: 'clamp(16px, 3vw, 48px)',
-        marginBottom: 'clamp(22px, 3vw, 32px)',
+        marginBottom: 'clamp(6px, 1vw, 12px)',
     },
     stat: {},
     statValue: {

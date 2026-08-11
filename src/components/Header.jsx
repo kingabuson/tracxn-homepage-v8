@@ -111,7 +111,9 @@ const styles = {
         gap: '16px',
         maxWidth: '1600px',
         margin: '0 auto',
-        padding: 'clamp(12px, 1.5vw, 16px) clamp(20px, 4vw, 56px)',
+        // Slimmed vertical padding — the bar was ~79px tall, eating into the
+        // hero's first fold. Now ~64px.
+        padding: 'clamp(9px, 1.1vw, 12px) clamp(20px, 4vw, 56px)',
     },
     left: {
         display: 'flex',
@@ -159,7 +161,7 @@ const styles = {
     signupBtn: {
         backgroundColor: '#ff6b00',
         color: 'white',
-        padding: '11px 22px',
+        padding: '9px 20px',
         borderRadius: '8px',
         textDecoration: 'none',
         fontWeight: 600,
