@@ -1,34 +1,34 @@
 /* ------------------------------------------------------------------ *
- * "Built for the entire Private Market Ecosystem" — v8 R2.
+ * "Built for the entire Private Market Ecosystem" — v8 R3.
  *
- * Older offerings design: un-numbered sticky rail left; old-language
- * offering cards right (soft colored bg, serif title, check bullets,
- * dark "Learn more" button; no graphics). Scroll drives the rail.
+ * Box-free scroll-fade design. A tall runway scrolls past a sticky
+ * two-column viewport: audiences as a vertical list on the left, one
+ * audience's text on the right. Scrolling crossfades the text — the
+ * outgoing block drifts up and fades, the incoming one rises in.
+ * No cards, borders or fills; type, whitespace and motion only.
  * ------------------------------------------------------------------ */
 
-.segx {
-  padding: clamp(48px, 5.5vw, 72px) 0;
+.segf {
+  padding: clamp(56px, 6vw, 84px) 0 0;
   background-color: #fcfcfc;
 }
-.segx-inner {
+
+.segf-head {
+  text-align: center;
   max-width: 1200px;
-  margin: 0 auto;
+  /* The usual decent air between the h2 block and the section body. */
+  margin: 0 auto clamp(36px, 4.5vw, 64px);
   padding: 0 24px;
 }
-
-.segx-head {
-  text-align: center;
-  margin-bottom: clamp(26px, 3vw, 42px);
-}
-.segx-h2 {
+.segf-h2 {
   font-family: var(--font-family-serif);
   font-weight: 400;
   line-height: 1.2;
   color: #1a1a1a;
   max-width: 900px;
-  margin: 0 auto 12px;
+  margin: 0 auto 14px;
 }
-.segx-sub {
+.segf-sub {
   font-size: clamp(0.95rem, 1.15vw, 1.05rem);
   color: #5f6368;
   font-family: var(--font-family-sans);
@@ -36,7 +36,7 @@
   max-width: 620px;
   margin: 0 auto;
 }
-.segx-sr {
+.segf-sr {
   position: absolute;
   width: 1px; height: 1px;
   padding: 0; margin: -1px;
@@ -44,21 +44,32 @@
   white-space: nowrap; border: 0;
 }
 
-/* ---- Two-column grid: rail + cards -------------------------------- */
-.segx-grid {
-  display: grid;
-  grid-template-columns: 270px 1fr;
-  gap: 52px;
-  align-items: start;
+/* ---- Runway + sticky viewport ------------------------------------- */
+.segf-runway {
+  position: relative;
+}
+.segf-sticky {
+  position: sticky;
+  /* Below the ~64px header, roughly centring the viewport in the fold. */
+  top: clamp(72px, 12vh, 130px);
+  height: min(560px, 72vh);
+  display: flex;
+  align-items: center;
 }
 
-/* Left rail — sticky, un-numbered */
-.segx-rail {
-  position: sticky;
-  top: 110px;
-  height: fit-content;
+.segf-grid {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: clamp(48px, 6vw, 96px);
+  align-items: center;
 }
-.segx-rail-list {
+
+/* Left rail — plain vertical list */
+.segf-rail-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -66,113 +77,127 @@
   flex-direction: column;
   gap: 2px;
 }
-.segx-rail-item {
+.segf-rail-item {
   display: block;
   width: 100%;
   text-align: left;
   background: none;
   border: none;
   border-left: 2px solid #E5E7EB;
-  padding: 11px 16px;
+  padding: 10px 16px;
   cursor: pointer;
   font-family: var(--font-family-sans);
   font-size: 0.98rem;
   font-weight: 400;
   color: #9CA3AF;
   white-space: nowrap;
-  transition: color .2s ease, border-color .2s ease;
+  transition: color .25s ease, border-color .25s ease;
 }
-.segx-rail-item:hover { color: #4B5563; }
-.segx-rail-item.is-active {
+.segf-rail-item:hover { color: #4B5563; }
+.segf-rail-item.is-active {
   color: #111827;
   font-weight: 600;
-  border-left: 2px solid #111827;
+  border-left-color: #111827;
 }
 
-/* Right column — old-style offering cards */
-.segx-cards {
+/* Right panel — stacked absolutely, one visible at a time */
+.segf-panel {
+  position: relative;
+  /* Reserve the tallest text's height so the layout never jumps. */
+  min-height: 380px;
+}
+
+.segf-text {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  gap: 26px;
-  padding-bottom: 16px;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .5s ease, transform .5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+/* The beautiful bit: departed text drifts up as it fades, upcoming text
+   waits below — so scrolling reads as one continuous rising stream. */
+.segf-text.is-before { transform: translateY(-34px); }
+.segf-text.is-after  { transform: translateY(34px); }
+.segf-text.is-active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 
-.segx-card {
-  border-radius: 28px;
-  padding: clamp(28px, 3vw, 42px);
-  color: #202124;
+@media (prefers-reduced-motion: reduce) {
+  .segf-text { transition: opacity .3s ease; transform: none !important; }
 }
 
-.segx-card-title {
+.segf-title {
   font-family: var(--font-family-serif);
   font-weight: 400;
-  font-size: clamp(1.35rem, 1.8vw, 1.7rem);
-  line-height: 1.28;
+  font-size: clamp(1.5rem, 2.1vw, 2rem);
+  line-height: 1.25;
   letter-spacing: -0.01em;
   color: #111827;
   margin: 0 0 10px;
 }
 
-.segx-card-line {
-  margin: 0 0 18px;
+.segf-line {
   font-family: var(--font-family-sans);
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #202124;
-  opacity: 0.85;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: #5f6368;
+  margin: 0 0 clamp(18px, 2.5vh, 28px);
+  max-width: 560px;
 }
 
-.segx-card-list {
+.segf-rows {
   list-style: none;
   margin: 0 0 22px;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
+  max-width: 560px;
 }
-.segx-card-item {
+.segf-row {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  padding: 13px 0;
+  border-top: 1px solid #E9EBF0;
   font-family: var(--font-family-sans);
-  font-size: 0.95rem;
-  line-height: 1.4;
+  font-size: 0.96rem;
+  line-height: 1.45;
   color: #202124;
 }
-.segx-check {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: rgba(11, 61, 145, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1px;
-}
+.segf-row:last-child { border-bottom: 1px solid #E9EBF0; }
+.segf-row-arrow { flex-shrink: 0; margin-top: 2px; color: #2166b0; }
 
-.segx-card-btn {
-  display: inline-block;
-  min-height: 44px;
-  padding: 11px 24px;
-  border-radius: 10px;
-  background: #202124;
-  color: #ffffff;
+.segf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-family-sans);
   font-weight: 600;
   font-size: 0.98rem;
+  color: #0b3d91;
   text-decoration: none;
-  transition: transform .2s ease;
+  width: fit-content;
+  padding: 6px 0; /* generous tap area without a box */
 }
-.segx-card-btn:hover { transform: translateY(-1px); text-decoration: none; }
+.segf-link:hover { text-decoration: underline; }
 
 /* ---- Responsive --------------------------------------------------- */
 @media (max-width: 860px) {
-  .segx-grid {
+  .segf-grid {
     grid-template-columns: 1fr;
-    gap: 22px;
+    gap: 0;
+    align-items: start;
   }
-  /* Rail can't sit beside the cards on phones; the titled cards stand alone. */
-  .segx-rail { display: none; }
-  .segx-card { padding: 24px; border-radius: 20px; }
+  /* The rail can't share a phone screen with the text; the text block's own
+     title carries the category name, so the rail goes. */
+  .segf-rail { display: none; }
+  .segf-sticky {
+    top: 76px;
+    height: min(520px, 68vh);
+  }
+  .segf-panel { min-height: 420px; }
 }

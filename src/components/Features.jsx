@@ -1,23 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import {
-    Building2, Search, Users, TrendingUp, PieChart, Globe,
-    Landmark, FileText, Scale, ShieldCheck, BookOpen, Banknote,
-    BarChart3, LineChart, Newspaper, CalendarDays, Target, Layers,
-    GitBranch, Filter, Bell, Smartphone, ListChecks, KanbanSquare,
-    Database, Braces, Download, Server, Plug, FileSpreadsheet,
-    ArrowRight,
-} from 'lucide-react';
+import FeatureMockup from './FeatureMockup';
 import './FeaturesTabs.css';
 
-/**
- * Offerings — v8 R2, restyled to the reference layout:
- * a compact h2, a centered row of icon+label tabs (active tab underlined by the
- * auto-advance loading bar), then a two-column body — copy + arrow-row
- * sub-features on the left, an HTML "radar" graphic (concentric rings, center
- * tile, floating icon tiles) on the right. Fits a single fold on desktop.
- * Fonts: PT Serif (headings) + Roboto (body) only.
- */
-
+// Offerings content - sourced from the "Tracxn Homepage - Offerings Section"
+// doc (Tab 1 descriptors + bullets; headings picked from the Tab 2 options).
 const features = [
     {
         id: '01',
@@ -29,10 +15,9 @@ const features = [
             'Full profiles: funding, cap tables, founders, and growth',
             'Tracxn Score benchmarks every company against 1M+ peers'
         ],
-        accent: '#2166b0',
-        tint: 'rgba(33, 102, 176, 0.08)',
-        center: Building2,
-        orbit: [Search, Users, TrendingUp, PieChart, Globe, Layers],
+        color: '#202124',
+        bg: '#f2f0e6',
+        animationType: 'scroll'
     },
     {
         id: '02',
@@ -44,10 +29,9 @@ const features = [
             'Structured filings: financials, directors, and shareholding',
             'Standardized across jurisdictions for like-for-like comparison'
         ],
-        accent: '#0e7490',
-        tint: 'rgba(14, 116, 144, 0.08)',
-        center: Landmark,
-        orbit: [FileText, Scale, ShieldCheck, BookOpen, Banknote, Search],
+        color: '#202124',
+        bg: '#dff3ff',
+        animationType: 'float'
     },
     {
         id: '03',
@@ -59,10 +43,9 @@ const features = [
             'Covers 2,500+ sectors and 30+ geographies, refreshed quarterly',
             'Custom reports on niche or emerging themes, on request'
         ],
-        accent: '#15803d',
-        tint: 'rgba(21, 128, 61, 0.08)',
-        center: BarChart3,
-        orbit: [LineChart, Newspaper, CalendarDays, Target, PieChart, Globe],
+        color: '#202124',
+        bg: '#ECFAE5',
+        animationType: 'scroll'
     },
     {
         id: '04',
@@ -74,10 +57,9 @@ const features = [
             'Track automatically - funding, M&A, and news roll in on their own',
             'Manage the full pipeline in one shared view, on web or mobile'
         ],
-        accent: '#b45309',
-        tint: 'rgba(180, 83, 9, 0.08)',
-        center: GitBranch,
-        orbit: [Filter, Bell, KanbanSquare, Smartphone, ListChecks, Users],
+        color: '#202124',
+        bg: '#F5DAD2',
+        animationType: 'float'
     },
     {
         id: '05',
@@ -89,56 +71,16 @@ const features = [
             'Custom data slices built around your exact filters',
             'Pre-built datasets and PoC packs to validate fit fast'
         ],
-        accent: '#6D28D9',
-        tint: 'rgba(109, 40, 217, 0.08)',
-        center: Database,
-        orbit: [Braces, Download, Server, Plug, FileSpreadsheet, Layers],
+        color: '#202124',
+        bg: '#EDE7F6',
+        animationType: 'float'
     }
 ];
 
+// Dwell per tab before it auto-advances. The loading bar fills over exactly
+// this window and its `animationend` is what triggers the advance, so the bar
+// and the advance can never drift apart (and pausing the bar pauses both).
 const DWELL_MS = 6500;
-
-// Fixed orbit slots (percent coordinates inside the square graphic), roughly
-// matching the reference's scatter: two tiles high, two mid, two low.
-const ORBIT_SLOTS = [
-    { left: '24%', top: '14%' },
-    { left: '76%', top: '16%' },
-    { left: '90%', top: '46%' },
-    { left: '10%', top: '52%' },
-    { left: '30%', top: '84%' },
-    { left: '72%', top: '82%' },
-];
-
-const RadarGraphic = ({ feature, active }) => {
-    const Center = feature.center;
-    return (
-        <div className="ftx-radar" aria-hidden="true">
-            {/* Concentric rings */}
-            <div className="ftx-ring ftx-ring-outer" />
-            <div className="ftx-ring ftx-ring-mid" style={{ background: feature.tint }} />
-            <div className="ftx-ring ftx-ring-inner" style={{ borderColor: feature.tint.replace('0.08', '0.4') }} />
-
-            {/* Center brand tile */}
-            <div className="ftx-center-tile" style={{ background: feature.accent }}>
-                <Center size={34} color="#ffffff" strokeWidth={1.9} />
-            </div>
-
-            {/* Floating icon tiles */}
-            {feature.orbit.map((Icon, i) => (
-                <div
-                    key={i}
-                    className={`ftx-orbit-tile${active ? ' float' : ''}`}
-                    style={{
-                        ...ORBIT_SLOTS[i],
-                        animationDelay: `${i * 0.55}s`,
-                    }}
-                >
-                    <Icon size={22} color={feature.accent} strokeWidth={1.8} />
-                </div>
-            ))}
-        </div>
-    );
-};
 
 const Features = () => {
     const [active, setActive] = useState(0);
@@ -147,8 +89,9 @@ const Features = () => {
 
     const go = useCallback((i) => setActive(((i % count) + count) % count), [count]);
 
-    // Reduced-motion fallback: the loading-bar animation can't fire
-    // animationend, so cycle on a plain timer instead.
+    // Auto-advance is driven by the active tab's loading bar finishing (see
+    // onAnimationEnd below). This effect only exists so that, if the bar can't
+    // animate (reduced motion), the section still cycles on a plain timer.
     const reduced = useRef(false);
     useEffect(() => {
         reduced.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -162,19 +105,21 @@ const Features = () => {
     return (
         <section id="features" className="ftx">
             <div className="container">
-                <h2 className="ftx-h2">
-                    Identify, analyze, and track the world's private markets
-                </h2>
+                <div className="ftx-head">
+                    <h2 className="ftx-h2">
+                        Identify, analyze, and track <br />
+                        the world's private markets
+                    </h2>
+                </div>
 
                 <div
                     onMouseEnter={() => setPaused(true)}
                     onMouseLeave={() => setPaused(false)}
                 >
-                    {/* Icon + label tabs, underline = the auto-advance loading bar */}
+                    {/* Horizontal tab bar */}
                     <div className="ftx-tabs" role="tablist" aria-label="Tracxn offerings">
                         {features.map((f, i) => {
                             const isActive = i === active;
-                            const TabIcon = f.center;
                             return (
                                 <button
                                     key={f.id}
@@ -187,20 +132,13 @@ const Features = () => {
                                     onFocus={() => setPaused(true)}
                                     onBlur={() => setPaused(false)}
                                 >
-                                    <TabIcon
-                                        size={16}
-                                        strokeWidth={2}
-                                        className="ftx-tab-icon"
-                                        style={{ color: isActive ? f.accent : undefined }}
-                                        aria-hidden="true"
-                                    />
+                                    <span className="ftx-tab-num">{f.id}</span>
                                     <span className="ftx-tab-title">{f.title}</span>
                                     {isActive && (
                                         <span
                                             key={active}
                                             className="ftx-tab-bar run"
                                             style={{
-                                                background: f.accent,
                                                 animationDuration: `${DWELL_MS}ms`,
                                                 animationPlayState: paused ? 'paused' : 'running',
                                             }}
@@ -212,7 +150,7 @@ const Features = () => {
                         })}
                     </div>
 
-                    {/* Sliding body */}
+                    {/* One stretched panel; the track slides sideways between offerings. */}
                     <div className="ftx-viewport">
                         <div
                             className="ftx-track"
@@ -227,28 +165,43 @@ const Features = () => {
                                     aria-labelledby={`ftx-tab-${f.id}`}
                                     aria-hidden={i !== active}
                                 >
-                                    <div className="ftx-body">
-                                        <div className="ftx-copy">
-                                            <h3 className="ftx-title">{f.heading}</h3>
-                                            <p className="ftx-desc">{f.subtext}</p>
-
-                                            <ul className="ftx-rows">
+                                    <div className="ftx-card" style={{ background: f.bg, color: f.color }}>
+                                        <div className="ftx-card-copy">
+                                            <h3 className="ftx-card-title" style={{ color: f.color }}>
+                                                {f.heading}
+                                            </h3>
+                                            <p className="ftx-card-desc" style={{ color: f.color }}>
+                                                {f.subtext}
+                                            </p>
+                                            <ul className="ftx-bullets">
                                                 {f.bullets.map((b, bi) => (
-                                                    <li key={bi} className="ftx-row">
-                                                        <ArrowRight
-                                                            size={17}
-                                                            strokeWidth={2.2}
-                                                            className="ftx-row-arrow"
-                                                            style={{ color: f.accent }}
-                                                            aria-hidden="true"
-                                                        />
+                                                    <li key={bi} className="ftx-bullet">
+                                                        <span className="ftx-bullet-check" aria-hidden="true">
+                                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                                                                <path d="M5 12l4 4L19 7" stroke="#0b3d91" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                                                            </svg>
+                                                        </span>
                                                         <span>{b}</span>
                                                     </li>
                                                 ))}
                                             </ul>
+                                            <button
+                                                className="ftx-btn"
+                                                style={{ color: f.bg, backgroundColor: f.color }}
+                                            >
+                                                Learn more
+                                            </button>
                                         </div>
 
-                                        <RadarGraphic feature={f} active={i === active} />
+                                        <div className="ftx-card-media">
+                                            <div className="ftx-media-inner">
+                                                <FeatureMockup
+                                                    inView={i === active}
+                                                    type={f.animationType}
+                                                    altText={f.title}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import './CustomerSegments.css';
 
 /**
- * "Built for the entire Private Market Ecosystem" — v8 R2.
+ * "Built for the entire Private Market Ecosystem" — v8 R3.
  *
- * The older offerings design: un-numbered vertical list of audiences on the
- * left (sticky rail, border-left indicator — the pre-v8 Features rail), and one
- * offering card per audience on the right in the old card language — soft
- * colored background, serif title, check bullets, dark "Learn more" button.
- * No per-category graphic. Scrolling the cards drives the rail highlight.
+ * Scroll-driven, box-free. A sticky viewport holds two columns: the nine
+ * audiences as a vertical list on the left, and ONE audience's text on the
+ * right — serif heading, one-line proposition, three arrow rows, a quiet
+ * "Learn more" link. No cards, borders or fills.
  *
- * "Media & Academia" is split into "Universities" and
- * "Journalists & Publications" — nine audiences total.
+ * The section is tall (one scroll "step" per audience); as the user scrolls,
+ * the active audience advances and the text crossfades — outgoing drifts up
+ * and fades, incoming rises in — while the rail highlight follows. Clicking a
+ * rail item scrolls the window to that audience's step.
  */
-
-const CARD_BGS = ['#f2f0e6', '#dff3ff', '#ECFAE5', '#F5DAD2', '#EDE7F6'];
 
 const segments = [
     {
@@ -119,97 +118,129 @@ const segments = [
     },
 ];
 
-const SegmentCard = ({ segment, bg, onActive }) => {
-    const { ref, inView } = useInView({ threshold: 0.55, rootMargin: '-15% 0px -20% 0px' });
-
-    useEffect(() => {
-        if (inView) onActive(segment.id);
-    }, [inView, segment.id, onActive]);
-
-    return (
-        <article
-            id={`seg-card-${segment.id}`}
-            ref={ref}
-            className="segx-card"
-            style={{ backgroundColor: bg }}
-        >
-            <h3 className="segx-card-title">{segment.title}</h3>
-            <p className="segx-card-line">{segment.line}</p>
-            <ul className="segx-card-list">
-                {segment.offerings.map((o, i) => (
-                    <li key={i} className="segx-card-item">
-                        <span className="segx-check" aria-hidden="true">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-                                <path d="M5 12l4 4L19 7" stroke="#0b3d91" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </span>
-                        <span>{o}</span>
-                    </li>
-                ))}
-            </ul>
-            <a
-                className="segx-card-btn"
-                href={segment.link}
-                target="_blank"
-                rel="noreferrer"
-            >
-                Learn more<span className="segx-sr"> about Tracxn for {segment.title} (opens in new tab)</span>
-            </a>
-        </article>
-    );
-};
+// Scroll distance per audience. Enough that each one gets a real dwell,
+// small enough that nine steps don't feel like a canyon.
+const STEP_VH = 52;
 
 const CustomerSegments = () => {
-    const [active, setActive] = useState(segments[0].id);
+    const [active, setActive] = useState(0);
+    const scrollRef = useRef(null);
+    const stickyRef = useRef(null);
+    const count = segments.length;
 
-    const scrollTo = (id) => {
-        const el = document.getElementById(`seg-card-${id}`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Map scroll progress through the tall wrapper → active index.
+    const onScroll = useCallback(() => {
+        const wrap = scrollRef.current;
+        const sticky = stickyRef.current;
+        if (!wrap || !sticky) return;
+        const rect = wrap.getBoundingClientRect();
+        const travel = rect.height - sticky.getBoundingClientRect().height;
+        if (travel <= 0) return;
+        const progress = Math.min(1, Math.max(0, -rect.top / travel));
+        const idx = Math.min(count - 1, Math.floor(progress * count));
+        setActive(idx);
+    }, [count]);
+
+    useEffect(() => {
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onScroll);
+        };
+    }, [onScroll]);
+
+    // Rail click → scroll the window to that audience's step (mid-step so the
+    // floor() lands squarely on it).
+    const jumpTo = (i) => {
+        const wrap = scrollRef.current;
+        const sticky = stickyRef.current;
+        if (!wrap || !sticky) return;
+        const travel = wrap.offsetHeight - sticky.offsetHeight;
+        const top = window.scrollY + wrap.getBoundingClientRect().top;
+        window.scrollTo({
+            top: top + ((i + 0.5) / count) * travel,
+            behavior: 'smooth',
+        });
     };
 
     return (
-        <section className="segx">
-            <div className="segx-inner">
-                <div className="segx-head">
-                    <h2 className="segx-h2">
-                        Built for the entire{' '}
-                        <span className="text-gradient-testimonial">Private Market Ecosystem</span>
-                    </h2>
-                    <p className="segx-sub">
-                        Investors, corporates, banks, NBFCs, and governments run their
-                        private-market work on Tracxn.
-                    </p>
-                </div>
+        <section className="segf">
+            <div className="segf-head">
+                <h2 className="segf-h2">
+                    Built for the entire{' '}
+                    <span className="text-gradient-testimonial">Private Market Ecosystem</span>
+                </h2>
+                <p className="segf-sub">
+                    Investors, corporates, banks, NBFCs, and governments run their
+                    private-market work on Tracxn.
+                </p>
+            </div>
 
-                <div className="segx-grid">
-                    {/* Left: sticky, un-numbered vertical list of audiences */}
-                    <nav className="segx-rail" aria-label="Audiences">
-                        <ul className="segx-rail-list">
-                            {segments.map((s) => (
-                                <li key={s.id}>
-                                    <button
-                                        type="button"
-                                        className={`segx-rail-item${active === s.id ? ' is-active' : ''}`}
-                                        onClick={() => scrollTo(s.id)}
-                                        aria-current={active === s.id}
-                                    >
-                                        {s.title}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
+            {/* Tall scroll runway; the grid inside stays stuck while it passes. */}
+            <div
+                ref={scrollRef}
+                className="segf-runway"
+                style={{ height: `calc(${count * STEP_VH}vh)` }}
+            >
+                <div ref={stickyRef} className="segf-sticky">
+                    <div className="segf-grid">
+                        {/* Left: vertical list of audiences */}
+                        <nav className="segf-rail" aria-label="Audiences">
+                            <ul className="segf-rail-list">
+                                {segments.map((s, i) => (
+                                    <li key={s.id}>
+                                        <button
+                                            type="button"
+                                            className={`segf-rail-item${active === i ? ' is-active' : ''}`}
+                                            onClick={() => jumpTo(i)}
+                                            aria-current={active === i}
+                                        >
+                                            {s.title}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
 
-                    {/* Right: one old-style offering card per audience */}
-                    <div className="segx-cards">
-                        {segments.map((s, i) => (
-                            <SegmentCard
-                                key={s.id}
-                                segment={s}
-                                bg={CARD_BGS[i % CARD_BGS.length]}
-                                onActive={setActive}
-                            />
-                        ))}
+                        {/* Right: one audience's text at a time, crossfading */}
+                        <div className="segf-panel" aria-live="polite">
+                            {segments.map((s, i) => {
+                                const state =
+                                    i === active ? 'is-active' : i < active ? 'is-before' : 'is-after';
+                                return (
+                                    <div key={s.id} className={`segf-text ${state}`} aria-hidden={i !== active}>
+                                        <h3 className="segf-title">{s.title}</h3>
+                                        <p className="segf-line">{s.line}</p>
+                                        <ul className="segf-rows">
+                                            {s.offerings.map((o, oi) => (
+                                                <li key={oi} className="segf-row">
+                                                    <ArrowRight
+                                                        size={17}
+                                                        strokeWidth={2.2}
+                                                        className="segf-row-arrow"
+                                                        aria-hidden="true"
+                                                    />
+                                                    <span>{o}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <a
+                                            className="segf-link"
+                                            href={s.link}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            tabIndex={i === active ? 0 : -1}
+                                        >
+                                            Learn more
+                                            <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
+                                            <span className="segf-sr"> about Tracxn for {s.title} (opens in new tab)</span>
+                                        </a>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
