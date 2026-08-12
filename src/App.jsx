@@ -24,13 +24,12 @@ function App() {
         <HeroEditorial />
         <LogoMarquee />
 
-        <AnimatedSection>
-          <CustomerSegments />
-        </AnimatedSection>
+        {/* NOT wrapped in AnimatedSection: both sections use position:sticky
+            scroll-driven interactions, and AnimatedSection's framer-motion
+            transform would become their containing block and break the pin. */}
+        <CustomerSegments />
 
-        <AnimatedSection>
-          <Features />
-        </AnimatedSection>
+        <Features />
 
         <AnimatedSection>
           <CoverageSection />

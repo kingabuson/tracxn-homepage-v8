@@ -1,22 +1,26 @@
-/* Offerings — v8 R4: Apollo's tabbed section rebuilt 1:1.
+/* Offerings — v8 R5: Apollo's PINNED scroll-driven tab section.
    ------------------------------------------------------------------
-   Colours sampled from the screen recording:
+   The h2 scrolls away in normal flow; a tall runway then pins a sticky
+   viewport (pills on top, content below) and scroll steps the track
+   horizontally through the five offerings with a ~450ms ease — the
+   behaviour on apollo.io. Colours sampled from the screen recording:
      section bg      #FEFEFE
      inactive pill   #F5F3F1
-     active pills    #F7FD26 · #A8A0E6 · #FFB3F3 · #C6DCFB (+ #BFE8C5 5th)
-     media cards     #3F3935 · #363048 · #4C2827 · #202929 (+ #26332B 5th)
-   Fonts are ours: PT Serif headline, Roboto everything else.
-   Tab switch = crossfade in place (no slide), as in the recording. */
+     active pills    #F7FD26 · #A8A0E6 · #FFB3F3 · #C6DCFB · #BFE8C5
+     media cards     #3F3935 · #363048 · #4C2827 · #202929 · #26332B
+   Fonts ours: PT Serif headline, Roboto everything else. */
 
 .ftx {
-  padding: 72px 0 80px;
   background-color: #FEFEFE;
+  padding-top: 72px;
 }
 
 .ftx-head {
   text-align: center;
-  max-width: 860px;
-  margin: 0 auto 44px;
+  max-width: 900px;
+  margin: 0 auto;
+  /* Air between the h2 and the pinned block that follows it. */
+  padding-bottom: clamp(36px, 5vh, 60px);
 }
 
 .ftx-h2 {
@@ -27,12 +31,36 @@
   line-height: 1.2;
 }
 
+/* ---- Pinned viewport ---------------------------------------------- */
+.ftx-runway {
+  position: relative;
+}
+
+.ftx-sticky {
+  position: sticky;
+  top: 64px;                     /* below the slim header */
+  height: calc(100dvh - 64px);
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ftx-frame {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: clamp(8px, 2vh, 24px);
+  padding-bottom: clamp(20px, 4vh, 44px);
+}
+
 /* ---- Pill row ----------------------------------------------------- */
 .ftx-tabs {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 18px;
-  margin-bottom: clamp(36px, 5vh, 64px);
+  margin-bottom: clamp(28px, 5vh, 56px);
+  flex-shrink: 0;
 }
 
 @media (max-width: 1080px) {
@@ -48,7 +76,6 @@
 }
 
 .ftx-tab {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,7 +85,6 @@
   border-radius: 6px;
   background: #F5F3F1;
   cursor: pointer;
-  overflow: hidden;
   transition: background .45s ease;
 }
 
@@ -75,50 +101,32 @@
   line-height: 1;
 }
 
-/* Thin fill bar in the active pill — the auto-advance "loading" cue. */
-.ftx-tab-bar {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 3px;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.28);
-  transform: scaleX(0);
-  transform-origin: left center;
+/* ---- Horizontal track --------------------------------------------- */
+.ftx-viewport {
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
 }
-.ftx-tab-bar.run { animation: ftx-fill linear forwards; }
-@keyframes ftx-fill {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
+
+.ftx-track {
+  display: flex;
+  height: 100%;
+  transition: transform .45s ease-in-out;   /* Apollo's 400ms ease-in-out */
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ftx-tab-bar.run { animation: none; transform: scaleX(1); }
-  .ftx-panel { transition: opacity .2s ease !important; }
+  .ftx-track { transition: none !important; }
 }
 
-/* ---- Crossfading stage -------------------------------------------- */
-.ftx-stage {
-  position: relative;
-  /* Tall enough for the tallest panel; panels are absolutely stacked. */
-  min-height: clamp(480px, 58vh, 600px);
-}
-
-.ftx-panel {
-  position: absolute;
-  inset: 0;
+.ftx-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(40px, 5vw, 96px);
+  /* Media card gets the wider column — the graphic reads big, as on Apollo. */
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(40px, 5vw, 88px);
   align-items: stretch;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .45s ease;
-  will-change: opacity;
-}
-.ftx-panel.is-active {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 /* Left column — headline + CTAs top, icon bullets pinned to the bottom */
@@ -127,16 +135,17 @@
   flex-direction: column;
   align-items: flex-start;
   min-width: 0;
+  padding: clamp(8px, 2vh, 28px) 0;
 }
 
 .ftx-headline {
   font-family: var(--font-family-serif);
   font-weight: 400;
-  font-size: clamp(2rem, 3vw, 2.9rem);
+  font-size: clamp(2rem, 2.9vw, 2.8rem);
   line-height: 1.18;
   letter-spacing: -0.01em;
   color: #1a1a1a;
-  margin: 0 0 clamp(28px, 4vh, 44px);
+  margin: 0 0 clamp(24px, 4vh, 40px);
   text-wrap: balance;
 }
 
@@ -175,11 +184,11 @@
 
 .ftx-points {
   list-style: none;
-  margin: auto 0 0;   /* pin to the bottom of the column, like the reference */
-  padding: clamp(28px, 5vh, 56px) 0 0;
+  margin: auto 0 0;   /* pinned to the bottom of the column */
+  padding: clamp(24px, 4vh, 48px) 0 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 15px;
 }
 .ftx-point {
   display: flex;
@@ -197,12 +206,11 @@
 }
 
 /* Right column — big dark rounded media card, screenshot inset between
-   colour bands top and bottom, cropped at the card's right edge. */
+   colour bands, cropped at the card's right edge. */
 .ftx-media {
   position: relative;
   border-radius: 14px;
   overflow: hidden;
-  min-height: 100%;
 }
 .ftx-media-shot {
   position: absolute;
@@ -210,7 +218,7 @@
   right: 0;
   transform: translateY(-50%);
   width: 94%;
-  height: calc(100% - clamp(96px, 18%, 160px));
+  height: calc(100% - clamp(88px, 16%, 150px));
   object-fit: cover;
   object-position: left top;
   border-radius: 8px 0 0 8px;
@@ -219,15 +227,14 @@
 
 /* ---- Responsive --------------------------------------------------- */
 @media (max-width: 900px) {
-  .ftx-stage { min-height: 0; }
-  .ftx-panel {
-    position: static;
+  .ftx-sticky { top: 60px; height: calc(100dvh - 60px); }
+  .ftx-slide {
     grid-template-columns: 1fr;
-    gap: 28px;
-    display: none;   /* stacked crossfade needs the absolute layout; on */
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 22px;
   }
-  .ftx-panel.is-active { display: grid; }  /* mobile just swap panels */
-  .ftx-points { margin-top: 0; padding-top: 8px; }
-  .ftx-media { min-height: 320px; }
-  .ftx-headline { margin-bottom: 20px; }
+  .ftx-copy { padding: 0; }
+  .ftx-points { margin-top: 0; padding-top: 16px; }
+  .ftx-media { min-height: 260px; }
+  .ftx-headline { margin-bottom: 18px; }
 }

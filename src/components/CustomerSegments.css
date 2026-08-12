@@ -30,7 +30,8 @@
 .segf-head {
   text-align: center;
   max-width: 1200px;
-  margin: 0 auto clamp(24px, 4vh, 48px);
+  /* R5: a bit more air between the h2 and the rail/text below it. */
+  margin: 0 auto clamp(40px, 7vh, 80px);
   padding: 0 24px;
 }
 .segf-h2 {

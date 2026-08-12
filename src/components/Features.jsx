@@ -1,23 +1,21 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-    Search, FileCheck2, BarChart3, GitBranch, Database,
     Building2, Users, TrendingUp, Landmark, Scale, ShieldCheck,
-    LineChart, CalendarDays, Filter, Bell, Smartphone,
+    LineChart, BarChart3, CalendarDays, Filter, Bell, Smartphone,
     Braces, Download, Server,
 } from 'lucide-react';
 import './FeaturesTabs.css';
 
 /**
- * Offerings — v8 R4: the Apollo "Turn hours of prospecting into minutes"
- * section, rebuilt 1:1 from the screen recording — same layout, same colours
- * (sampled from the frames), our fonts (PT Serif headline, Roboto elsewhere).
+ * Offerings — v8 R5: Apollo's pinned scroll-driven tab section.
  *
- * Full-width row of equal pills (uppercase, letter-spaced); the active pill
- * takes its offering's pastel colour. Below, a two-column body on white:
- * big serif headline + button pair top-left, icon bullets bottom-left, and a
- * large dark rounded media card on the right. Switching tabs crossfades the
- * body in place (no slide) — the transition visible in the recording. The
- * active pill carries a thin fill bar that auto-advances the cycle.
+ * Like the live apollo.io reference: the h2 scrolls away normally, then the
+ * section PINS (sticky viewport inside a tall runway) and further scrolling
+ * steps horizontally through the five offerings — the track translates with a
+ * ~450ms ease, the active pill follows, and once the last offering has been
+ * seen the section releases and the page continues. Clicking a pill scrolls
+ * the window to that offering's step. Colours sampled from the recording;
+ * fonts ours (PT Serif headline, Roboto elsewhere).
  */
 
 const features = [
@@ -25,8 +23,8 @@ const features = [
         id: '01',
         title: 'Rich Firmographic Data',
         heading: '8M+ companies. One data layer deep enough to trust.',
-        pill: '#F7FD26',        // Apollo neon yellow
-        cardBg: '#3F3935',      // dark warm brown
+        pill: '#F7FD26',
+        cardBg: '#3F3935',
         bullets: [
             { icon: Building2, text: '8M+ companies across 3,000+ sectors and 100+ countries' },
             { icon: Users, text: 'Full profiles: funding, cap tables, founders, and growth' },
@@ -38,8 +36,8 @@ const features = [
         id: '02',
         title: 'Deep Regulatory Data',
         heading: 'Every filing. Every registry. One searchable format.',
-        pill: '#A8A0E6',        // periwinkle
-        cardBg: '#363048',      // dark purple
+        pill: '#A8A0E6',
+        cardBg: '#363048',
         bullets: [
             { icon: Landmark, text: 'Sourced from official registries - MCA, Companies House, SEC' },
             { icon: Scale, text: 'Structured filings: financials, directors, and shareholding' },
@@ -49,11 +47,10 @@ const features = [
     },
     {
         id: '03',
-        title: 'Markets move quarterly. So do our reports.',
-        titleTab: 'Sector Market & Reports',
+        title: 'Sector Market & Reports',
         heading: 'Markets move quarterly. So do our reports.',
-        pill: '#FFB3F3',        // pink
-        cardBg: '#4C2827',      // dark maroon
+        pill: '#FFB3F3',
+        cardBg: '#4C2827',
         bullets: [
             { icon: LineChart, text: 'Analyst intelligence on funding, market sizing, and exits' },
             { icon: BarChart3, text: 'Covers 2,500+ sectors and 30+ geographies, refreshed quarterly' },
@@ -65,8 +62,8 @@ const features = [
         id: '04',
         title: 'Workflow Solutions',
         heading: 'Stop juggling five tools to run one deal.',
-        pill: '#C6DCFB',        // light blue
-        cardBg: '#202929',      // near-black green
+        pill: '#C6DCFB',
+        cardBg: '#202929',
         bullets: [
             { icon: Filter, text: 'Source proactively - screen 7.7M+ companies across 100+ filters' },
             { icon: Bell, text: 'Track automatically - funding, M&A, and news roll in on their own' },
@@ -78,8 +75,8 @@ const features = [
         id: '05',
         title: 'Data Solutions',
         heading: 'However you need it - API, export, or custom build.',
-        pill: '#BFE8C5',        // pastel mint (5th, in the same family)
-        cardBg: '#26332B',      // dark green
+        pill: '#BFE8C5',
+        cardBg: '#26332B',
         bullets: [
             { icon: Braces, text: 'Full API access and bulk exports for your internal systems' },
             { icon: Download, text: 'Custom data slices built around your exact filters' },
@@ -89,32 +86,51 @@ const features = [
     },
 ];
 
-// Tab labels: prefer the short tab title where the card heading is long.
-const tabLabel = (f) => f.titleTab || f.title;
-
-const DWELL_MS = 6500;
-
 const Features = () => {
     const [active, setActive] = useState(0);
-    const [paused, setPaused] = useState(false);
+    const runwayRef = useRef(null);
+    const stickyRef = useRef(null);
     const count = features.length;
 
-    const go = useCallback((i) => setActive(((i % count) + count) % count), [count]);
+    // Scroll progress through the runway → active step.
+    const onScroll = useCallback(() => {
+        const runway = runwayRef.current;
+        const sticky = stickyRef.current;
+        if (!runway || !sticky) return;
+        const rect = runway.getBoundingClientRect();
+        const travel = rect.height - sticky.getBoundingClientRect().height;
+        if (travel <= 0) return;
+        const progress = Math.min(1, Math.max(0, -rect.top / travel));
+        setActive(Math.min(count - 1, Math.floor(progress * count)));
+    }, [count]);
 
-    // Reduced-motion fallback: the pill fill bar can't animate, so cycle on a
-    // plain timer instead.
-    const reduced = useRef(false);
     useEffect(() => {
-        reduced.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }, []);
-    useEffect(() => {
-        if (!reduced.current || paused) return;
-        const t = setTimeout(() => go(active + 1), DWELL_MS);
-        return () => clearTimeout(t);
-    }, [active, paused, go]);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onScroll);
+        };
+    }, [onScroll]);
+
+    // Pill click → jump the window to that offering's step (mid-step so the
+    // floor() lands squarely on it).
+    const jumpTo = (i) => {
+        const runway = runwayRef.current;
+        const sticky = stickyRef.current;
+        if (!runway || !sticky) return;
+        const travel = runway.offsetHeight - sticky.offsetHeight;
+        const top = window.scrollY + runway.getBoundingClientRect().top;
+        window.scrollTo({
+            top: top + ((i + 0.5) / count) * travel,
+            behavior: 'smooth',
+        });
+    };
 
     return (
         <section id="features" className="ftx">
+            {/* Normal-flow heading — scrolls away before the section pins. */}
             <div className="container">
                 <div className="ftx-head">
                     <h2 className="ftx-h2">
@@ -122,111 +138,110 @@ const Features = () => {
                         the world's private markets
                     </h2>
                 </div>
+            </div>
 
-                <div
-                    onMouseEnter={() => setPaused(true)}
-                    onMouseLeave={() => setPaused(false)}
-                >
-                    {/* Full-width pill row */}
-                    <div className="ftx-tabs" role="tablist" aria-label="Tracxn offerings">
-                        {features.map((f, i) => {
-                            const isActive = i === active;
-                            return (
-                                <button
-                                    key={f.id}
-                                    role="tab"
-                                    aria-selected={isActive}
-                                    aria-controls={`ftx-panel-${f.id}`}
-                                    id={`ftx-tab-${f.id}`}
-                                    className={`ftx-tab${isActive ? ' is-active' : ''}`}
-                                    style={isActive ? { background: f.pill } : undefined}
-                                    onClick={() => go(i)}
-                                    onFocus={() => setPaused(true)}
-                                    onBlur={() => setPaused(false)}
-                                >
-                                    <span className="ftx-tab-title">{tabLabel(f)}</span>
-                                    {isActive && (
-                                        <span
-                                            key={active}
-                                            className="ftx-tab-bar run"
-                                            style={{
-                                                animationDuration: `${DWELL_MS}ms`,
-                                                animationPlayState: paused ? 'paused' : 'running',
-                                            }}
-                                            onAnimationEnd={() => go(active + 1)}
-                                        />
-                                    )}
-                                </button>
-                            );
-                        })}
-                    </div>
+            {/* Tall runway; the sticky viewport pins while it passes and the
+                track steps horizontally through the offerings. */}
+            <div
+                ref={runwayRef}
+                className="ftx-runway"
+                style={{ height: `${count * 85}vh` }}
+            >
+                <div ref={stickyRef} className="ftx-sticky">
+                    <div className="container ftx-frame">
+                        {/* Pill row */}
+                        <div className="ftx-tabs" role="tablist" aria-label="Tracxn offerings">
+                            {features.map((f, i) => {
+                                const isActive = i === active;
+                                return (
+                                    <button
+                                        key={f.id}
+                                        role="tab"
+                                        aria-selected={isActive}
+                                        aria-controls={`ftx-panel-${f.id}`}
+                                        id={`ftx-tab-${f.id}`}
+                                        className={`ftx-tab${isActive ? ' is-active' : ''}`}
+                                        style={isActive ? { background: f.pill } : undefined}
+                                        onClick={() => jumpTo(i)}
+                                    >
+                                        <span className="ftx-tab-title">{f.title}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
 
-                    {/* Crossfading body — panels stacked, active one fades in place */}
-                    <div className="ftx-stage">
-                        {features.map((f, i) => (
+                        {/* Horizontal track — slides one viewport per step */}
+                        <div className="ftx-viewport">
                             <div
-                                key={f.id}
-                                className={`ftx-panel${i === active ? ' is-active' : ''}`}
-                                role="tabpanel"
-                                id={`ftx-panel-${f.id}`}
-                                aria-labelledby={`ftx-tab-${f.id}`}
-                                aria-hidden={i !== active}
+                                className="ftx-track"
+                                style={{ transform: `translateX(-${active * 100}%)` }}
                             >
-                                <div className="ftx-copy">
-                                    <h3 className="ftx-headline">{f.heading}</h3>
+                                {features.map((f, i) => (
+                                    <div
+                                        key={f.id}
+                                        className="ftx-slide"
+                                        role="tabpanel"
+                                        id={`ftx-panel-${f.id}`}
+                                        aria-labelledby={`ftx-tab-${f.id}`}
+                                        aria-hidden={i !== active}
+                                    >
+                                        <div className="ftx-copy">
+                                            <h3 className="ftx-headline">{f.heading}</h3>
 
-                                    <div className="ftx-ctas">
-                                        <a
-                                            href="#signup"
-                                            className="ftx-btn-dark"
-                                            tabIndex={i === active ? 0 : -1}
-                                        >
-                                            Get started for free
-                                        </a>
-                                        <a
-                                            href="#offerings"
-                                            className="ftx-btn-outline"
-                                            tabIndex={i === active ? 0 : -1}
-                                        >
-                                            Learn more
-                                        </a>
+                                            <div className="ftx-ctas">
+                                                <a
+                                                    href="#signup"
+                                                    className="ftx-btn-dark"
+                                                    tabIndex={i === active ? 0 : -1}
+                                                >
+                                                    Get started for free
+                                                </a>
+                                                <a
+                                                    href="#offerings"
+                                                    className="ftx-btn-outline"
+                                                    tabIndex={i === active ? 0 : -1}
+                                                >
+                                                    Learn more
+                                                </a>
+                                            </div>
+
+                                            <ul className="ftx-points">
+                                                {f.bullets.map((b, bi) => {
+                                                    const Icon = b.icon;
+                                                    return (
+                                                        <li key={bi} className="ftx-point">
+                                                            <Icon size={19} strokeWidth={1.7} className="ftx-point-icon" aria-hidden="true" />
+                                                            <span>{b.text}</span>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        </div>
+
+                                        <div className="ftx-media" style={{ background: f.cardBg }}>
+                                            {f.media.type === 'video' ? (
+                                                <video
+                                                    className="ftx-media-shot"
+                                                    src={f.media.src}
+                                                    autoPlay
+                                                    muted
+                                                    loop
+                                                    playsInline
+                                                    aria-label={`${f.title} demo`}
+                                                />
+                                            ) : (
+                                                <img
+                                                    className="ftx-media-shot"
+                                                    src={f.media.src}
+                                                    alt={`${f.title} interface`}
+                                                    loading="lazy"
+                                                />
+                                            )}
+                                        </div>
                                     </div>
-
-                                    <ul className="ftx-points">
-                                        {f.bullets.map((b, bi) => {
-                                            const Icon = b.icon;
-                                            return (
-                                                <li key={bi} className="ftx-point">
-                                                    <Icon size={19} strokeWidth={1.7} className="ftx-point-icon" aria-hidden="true" />
-                                                    <span>{b.text}</span>
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                </div>
-
-                                <div className="ftx-media" style={{ background: f.cardBg }}>
-                                    {f.media.type === 'video' ? (
-                                        <video
-                                            className="ftx-media-shot"
-                                            src={f.media.src}
-                                            autoPlay
-                                            muted
-                                            loop
-                                            playsInline
-                                            aria-label={`${tabLabel(f)} demo`}
-                                        />
-                                    ) : (
-                                        <img
-                                            className="ftx-media-shot"
-                                            src={f.media.src}
-                                            alt={`${tabLabel(f)} interface`}
-                                            loading="lazy"
-                                        />
-                                    )}
-                                </div>
+                                ))}
                             </div>
-                        ))}
+                        </div>
                     </div>
                 </div>
             </div>

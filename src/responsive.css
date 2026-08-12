@@ -37,9 +37,10 @@ button,
    several sections hard-code `fontSize: '3.5rem'` inline, which would otherwise
    stay 56px on a 375px screen. */
 h2 {
-    /* v8: global h2 step-down — the !important wins over the sections that
-       hard-code fontSize inline, so this is the one knob for every h2. */
-    font-size: clamp(1.55rem, 3.2vw, 2.4rem) !important;
+    /* v8: global h2 size — the !important wins over the sections that
+       hard-code fontSize inline, so this is the one knob for every h2.
+       R5: bumped up so every section heading reads larger. */
+    font-size: clamp(1.9rem, 4vw, 3.2rem) !important;
 }
 
 @media (max-width: 768px) {
