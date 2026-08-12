@@ -79,8 +79,8 @@ const HeroEditorial = () => {
                         </div>
 
                         {/* Hero banner — a self-contained isometric illustration served
-                            from /public. It has a transparent background and its own soft
-                            grey blob, so it sits directly on the hero gradient with no card
+                            from /public. Fully transparent background (the grey oval was
+                            removed), so it sits directly on the hero gradient with no card
                             chrome (no white well, border or shadow) and blends in. */}
                         <motion.div
                             initial={{ opacity: 0, y: 18, scale: 0.98 }}
