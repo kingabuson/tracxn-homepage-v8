@@ -11,13 +11,17 @@ import './CustomerSegments.css';
  *
  * HubSpot's "Growing a business is hard" layout: a sticky heading block on the
  * left (title + lead + CTA) that stays put, and a two-column grid of small
- * cards on the right that scrolls past it. Each card = a coloured icon tile,
- * the audience name, a one-line proposition and a "Learn more" link. Cards
- * fade-and-rise into view as they scroll in (HubSpot's reveal), staggered.
+ * cards on the right that scrolls past it. Each card = a 24px icon inline with
+ * the audience name, a dashed rule, two ticked offering points and a "Learn
+ * more" link. Icons and links are all one brand blue (ACCENT) rather than a
+ * colour per card. Cards fade-and-rise into view as they scroll in.
  *
  * Media & Academia is a single clubbed audience (journalists, publications and
  * universities together).
  */
+
+// One accent for every card — the icons and links are all brand blue.
+const ACCENT = '#2563EB';
 
 const segments = [
     {
@@ -29,7 +33,6 @@ const segments = [
         ],
         link: 'https://w.tracxn.com/customers/solutions-for-venture-capital-funds',
         icon: Rocket,
-        color: '#2563EB',
     },
     {
         id: 'pe',
@@ -40,7 +43,6 @@ const segments = [
         ],
         link: 'https://w.tracxn.com/customers/solutions-for-private-equity-funds',
         icon: TrendingUp,
-        color: '#7C3AED',
     },
     {
         id: 'ib',
@@ -51,7 +53,6 @@ const segments = [
         ],
         link: 'https://w.tracxn.com/customers/solutions-for-investment-banks',
         icon: Briefcase,
-        color: '#0EA5E9',
     },
     {
         id: 'banks',
@@ -62,7 +63,6 @@ const segments = [
         ],
         link: 'https://w.tracxn.com/customers/solutions-for-banks-and-nbfcs',
         icon: Landmark,
-        color: '#059669',
     },
     {
         id: 'corpdev',
@@ -73,7 +73,6 @@ const segments = [
         ],
         link: 'https://w.tracxn.com/customers/solutions-for-corporate-dev-and-ma-team',
         icon: GitMerge,
-        color: '#DB2777',
     },
     {
         id: 'innovation',
@@ -84,7 +83,6 @@ const segments = [
         ],
         link: 'https://w.tracxn.com/customers/solutions-for-corporate-innovation',
         icon: Lightbulb,
-        color: '#EA580C',
     },
     {
         id: 'government',
@@ -95,7 +93,6 @@ const segments = [
         ],
         link: 'https://w.tracxn.com/customers/tracxn-for-government',
         icon: Building2,
-        color: '#0891B2',
     },
     {
         id: 'media',
@@ -106,7 +103,6 @@ const segments = [
         ],
         link: 'https://w.tracxn.com/customers/solutions-for-journalists-publications',
         icon: Newspaper,
-        color: '#CA8A04',
     },
 ];
 
@@ -126,7 +122,7 @@ const SegmentCard = ({ segment, index }) => {
             {/* HubSpot card anatomy: icon + title on one row, dashed divider,
                 description, then the CTA pinned to the bottom. */}
             <span className="seg8-head">
-                <Icon size={24} strokeWidth={1.9} className="seg8-ico" style={{ color: segment.color }} aria-hidden="true" />
+                <Icon size={24} strokeWidth={1.9} className="seg8-ico" style={{ color: ACCENT }} aria-hidden="true" />
                 <span className="seg8-card-title">{segment.title}</span>
             </span>
             <span className="seg8-divider" aria-hidden="true" />
@@ -139,7 +135,7 @@ const SegmentCard = ({ segment, index }) => {
                     </span>
                 ))}
             </span>
-            <span className="seg8-card-link" style={{ color: segment.color }}>
+            <span className="seg8-card-link" style={{ color: ACCENT }}>
                 Learn more
                 <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />
                 <span className="seg8-sr"> about Tracxn for {segment.title} (opens in new tab)</span>
