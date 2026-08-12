@@ -11,13 +11,17 @@
   background-color: #fcfcfc;
 }
 
+/* HubSpot: grid 352px / 704px with a 24px gap — the same gap it uses
+   between the cards, so the heading column and the cards share one rhythm. */
 .seg8-inner {
-  max-width: 1240px;
+  /* 352 aside + 24 gap + 704 cards + 48 page padding = 1128 → cards land at
+     HubSpot's 340px each. */
+  max-width: 1128px;
   margin: 0 auto;
   padding: 0 24px;
   display: grid;
-  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-  gap: clamp(40px, 5vw, 88px);
+  grid-template-columns: 352px minmax(0, 704px);
+  gap: 24px;
   align-items: start;
 }
 
@@ -36,7 +40,8 @@
   /* Left-aligned here (the global h2 rule is centered via text-align on the
      element; override for this layout). */
   text-align: left !important;
-  max-width: 12ch;
+  /* Line breaks are explicit in the markup (three lines). */
+  max-width: none;
 }
 .seg8-lead {
   font-family: var(--font-family-sans);
@@ -46,7 +51,11 @@
   margin: 0 0 28px;
   max-width: 30ch;
 }
-.seg8-cta {
+/* Apollo-style hover: label colour never changes, no underline — only a
+   slight background shift. (Overrides the global a:hover rule.) */
+.seg8-cta,
+.seg8-cta:hover,
+.seg8-cta:focus {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -59,9 +68,9 @@
   font-weight: 500;
   font-size: 1rem;
   text-decoration: none;
-  transition: background .2s ease, transform .2s ease;
+  transition: background .2s ease;
 }
-.seg8-cta:hover { background: #000; transform: translateY(-1px); text-decoration: none; }
+.seg8-cta:hover { background: #2e2e33; }
 .seg8-cta svg { transition: transform .2s ease; }
 .seg8-cta:hover svg { transform: translateX(3px); }
 
@@ -73,23 +82,27 @@
   white-space: nowrap; border: 0;
 }
 
-/* Right — 2-column grid of cards */
+/* Right — 2-column grid of cards. HubSpot: 340px cards, 24px gap. */
 .seg8-cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 24px;
 }
 
+/* HubSpot card: 340x288, padding 32/32/24, radius 16, 1px hairline border,
+   flex column with a 16px rhythm. */
 .seg8-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
+  gap: 16px;
+  min-height: 288px;
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.11);
   border-radius: 16px;
-  padding: 28px 28px 24px;
+  padding: 32px 32px 24px;
   text-decoration: none;
-  color: inherit;
+  color: #1F1F1F;
   /* HubSpot reveal: fade + rise into view */
   opacity: 0;
   transform: translateY(26px);
@@ -105,39 +118,47 @@
   border-color: rgba(0, 0, 0, 0.2);
   box-shadow: 0 20px 44px -24px rgba(10, 31, 68, 0.32);
 }
+/* No underline anywhere in the card on hover. */
+.seg8-card,
+.seg8-card:hover,
+.seg8-card:focus,
+.seg8-card * { text-decoration: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .seg8-card { transition: box-shadow .25s ease, border-color .25s ease; opacity: 1; transform: none; }
 }
 
-.seg8-ico {
-  display: inline-flex;
+/* Icon + title on one row (HubSpot: 24px icon, 6px gap, no tile). */
+.seg8-head {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  margin-bottom: 18px;
-  flex-shrink: 0;
+  gap: 6px;
+  min-height: 28px;
 }
+.seg8-ico { flex-shrink: 0; }
 
 .seg8-card-title {
-  font-family: var(--font-family-serif);
-  font-weight: 400;
-  font-size: 1.35rem;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  color: #111827;
-  margin: 0 0 8px;
+  font-family: var(--font-family-sans);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: normal;
+  color: #1F1F1F;
+}
+
+/* HubSpot's 1px dashed hairline under the heading row. */
+.seg8-divider {
+  display: block;
+  height: 0;
+  border-top: 1px dashed rgba(0, 0, 0, 0.11);
 }
 
 .seg8-card-line {
   font-family: var(--font-family-sans);
-  font-size: 0.96rem;
-  line-height: 1.5;
-  color: #5f6368;
-  margin: 0 0 18px;
-  flex: 1;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: #1F1F1F;
 }
 
 .seg8-card-link {
@@ -145,14 +166,18 @@
   align-items: center;
   gap: 6px;
   font-family: var(--font-family-sans);
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  /* Pinned to the card's bottom, as HubSpot does. */
+  margin-top: auto;
+  padding-top: 26px;
 }
 .seg8-card-link svg { transition: transform .2s ease; }
 .seg8-card:hover .seg8-card-link svg { transform: translateX(3px); }
 
 /* ---- Responsive --------------------------------------------------- */
-@media (max-width: 980px) {
+@media (max-width: 1060px) {
   .seg8-inner { grid-template-columns: 1fr; gap: 32px; }
   .seg8-aside { position: static; }
   .seg8-h2 { max-width: none; text-align: center !important; }

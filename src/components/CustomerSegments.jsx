@@ -89,7 +89,6 @@ const segments = [
 const SegmentCard = ({ segment, index }) => {
     const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2, rootMargin: '0px 0px -40px 0px' });
     const Icon = segment.icon;
-    const tint = `${segment.color}14`; // ~8% alpha
 
     return (
         <a
@@ -100,11 +99,14 @@ const SegmentCard = ({ segment, index }) => {
             rel="noreferrer"
             style={{ transitionDelay: `${(index % 2) * 80 + Math.floor(index / 2) * 40}ms` }}
         >
-            <span className="seg8-ico" style={{ background: tint, color: segment.color }}>
-                <Icon size={24} strokeWidth={1.9} aria-hidden="true" />
+            {/* HubSpot card anatomy: icon + title on one row, dashed divider,
+                description, then the CTA pinned to the bottom. */}
+            <span className="seg8-head">
+                <Icon size={24} strokeWidth={1.9} className="seg8-ico" style={{ color: segment.color }} aria-hidden="true" />
+                <span className="seg8-card-title">{segment.title}</span>
             </span>
-            <h3 className="seg8-card-title">{segment.title}</h3>
-            <p className="seg8-card-line">{segment.line}</p>
+            <span className="seg8-divider" aria-hidden="true" />
+            <span className="seg8-card-line">{segment.line}</span>
             <span className="seg8-card-link" style={{ color: segment.color }}>
                 Learn more
                 <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />
@@ -120,9 +122,15 @@ const CustomerSegments = () => {
             <div className="seg8-inner">
                 {/* Left: sticky heading block */}
                 <aside className="seg8-aside">
+                    {/* Explicit breaks keep the heading on exactly three lines. */}
                     <h2 className="seg8-h2">
-                        Built for the entire{' '}
-                        <span className="text-gradient-testimonial">Private Market Ecosystem</span>
+                        Built for the entire
+                        <br />
+                        <span className="text-gradient-testimonial">
+                            Private Market
+                            <br />
+                            Ecosystem
+                        </span>
                     </h2>
                     <p className="seg8-lead">
                         Investors, corporates, banks, NBFCs, and governments run their

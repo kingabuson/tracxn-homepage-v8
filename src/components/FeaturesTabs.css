@@ -200,17 +200,27 @@
   text-decoration: none;
   transition: transform .2s ease, background .2s ease;
 }
-.ftx-btn-dark {
+/* Apollo's hover: the label never changes colour and never underlines — only
+   the button's background shifts slightly. (The global a:hover rule would
+   otherwise recolour + underline these, since they are <a> elements.) */
+.ftx-btn-dark,
+.ftx-btn-dark:hover,
+.ftx-btn-dark:focus {
   background: #16161a;
   color: #ffffff;
+  text-decoration: none;
 }
-.ftx-btn-dark:hover { background: #000; text-decoration: none; }
-.ftx-btn-outline {
+.ftx-btn-dark:hover { background: #2e2e33; }
+
+.ftx-btn-outline,
+.ftx-btn-outline:hover,
+.ftx-btn-outline:focus {
   background: transparent;
   color: #16161a;
   border: 1px solid rgba(22, 22, 26, 0.55);
+  text-decoration: none;
 }
-.ftx-btn-outline:hover { border-color: #16161a; text-decoration: none; }
+.ftx-btn-outline:hover { background: rgba(22, 22, 26, 0.05); }
 
 .ftx-points {
   list-style: none;
