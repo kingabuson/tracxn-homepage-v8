@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import {
     Rocket, TrendingUp, Briefcase, Landmark, GitMerge, Lightbulb,
-    Building2, Newspaper, ArrowRight,
+    Building2, Newspaper, ArrowRight, Check,
 } from 'lucide-react';
 import './CustomerSegments.css';
 
@@ -23,7 +23,10 @@ const segments = [
     {
         id: 'vc',
         title: 'Venture Capital',
-        line: 'Find high-potential startups early — and move before the round is announced.',
+        points: [
+            'Source startups before the round is announced.',
+            'Track portfolio and competitor moves automatically.',
+        ],
         link: 'https://w.tracxn.com/customers/solutions-for-venture-capital-funds',
         icon: Rocket,
         color: '#2563EB',
@@ -31,7 +34,10 @@ const segments = [
     {
         id: 'pe',
         title: 'Private Equity & Growth',
-        line: 'Find buyout and growth targets, then diligence them properly.',
+        points: [
+            'Screen buyout and growth targets by traction.',
+            'Diligence with verified financials and cap tables.',
+        ],
         link: 'https://w.tracxn.com/customers/solutions-for-private-equity-funds',
         icon: TrendingUp,
         color: '#7C3AED',
@@ -39,7 +45,10 @@ const segments = [
     {
         id: 'ib',
         title: 'Investment Banks',
-        line: 'Win mandates and execute them on private-market evidence.',
+        points: [
+            'Build buyer and target lists in minutes.',
+            'Benchmark valuations against comparable deals.',
+        ],
         link: 'https://w.tracxn.com/customers/solutions-for-investment-banks',
         icon: Briefcase,
         color: '#0EA5E9',
@@ -47,7 +56,10 @@ const segments = [
     {
         id: 'banks',
         title: 'Banks & NBFCs',
-        line: 'Acquire borrowers and underwrite them on verified filings.',
+        points: [
+            'Source SME and corporate borrowers at scale.',
+            'Underwrite on verified regulatory filings.',
+        ],
         link: 'https://w.tracxn.com/customers/solutions-for-banks-and-nbfcs',
         icon: Landmark,
         color: '#059669',
@@ -55,7 +67,10 @@ const segments = [
     {
         id: 'corpdev',
         title: 'Corporate M&A & Strategy',
-        line: 'Screen targets and track consolidation across your industry.',
+        points: [
+            'Map acquisition targets across 2,500+ sectors.',
+            'Track competitor M&A and funding activity.',
+        ],
         link: 'https://w.tracxn.com/customers/solutions-for-corporate-dev-and-ma-team',
         icon: GitMerge,
         color: '#DB2777',
@@ -63,7 +78,10 @@ const segments = [
     {
         id: 'innovation',
         title: 'Corporate Innovation',
-        line: 'Track emerging technology and the startups worth partnering with.',
+        points: [
+            'Scout startups across 3,000+ emerging sectors.',
+            'Monitor technology themes as they take off.',
+        ],
         link: 'https://w.tracxn.com/customers/solutions-for-corporate-innovation',
         icon: Lightbulb,
         color: '#EA580C',
@@ -71,7 +89,10 @@ const segments = [
     {
         id: 'government',
         title: 'Government & Public Sector',
-        line: 'Map, benchmark and grow your regional startup ecosystem.',
+        points: [
+            'Benchmark your ecosystem against peer regions.',
+            'Track capital flowing into your region.',
+        ],
         link: 'https://w.tracxn.com/customers/tracxn-for-government',
         icon: Building2,
         color: '#0891B2',
@@ -79,7 +100,10 @@ const segments = [
     {
         id: 'media',
         title: 'Media & Academia',
-        line: 'Report and research the innovation economy on data that holds up.',
+        points: [
+            'Cite funding, M&A and IPO datasets.',
+            'Research sectors on human-verified profiles.',
+        ],
         link: 'https://w.tracxn.com/customers/solutions-for-journalists-publications',
         icon: Newspaper,
         color: '#CA8A04',
@@ -106,7 +130,15 @@ const SegmentCard = ({ segment, index }) => {
                 <span className="seg8-card-title">{segment.title}</span>
             </span>
             <span className="seg8-divider" aria-hidden="true" />
-            <span className="seg8-card-line">{segment.line}</span>
+            {/* Two tick points, as HubSpot's cards do. */}
+            <span className="seg8-points">
+                {segment.points.map((p, pi) => (
+                    <span key={pi} className="seg8-point">
+                        <Check size={18} strokeWidth={2} className="seg8-tick" aria-hidden="true" />
+                        <span>{p}</span>
+                    </span>
+                ))}
+            </span>
             <span className="seg8-card-link" style={{ color: segment.color }}>
                 Learn more
                 <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />

@@ -153,11 +153,26 @@
   border-top: 1px dashed rgba(0, 0, 0, 0.11);
 }
 
-.seg8-card-line {
+/* Two tick points — HubSpot: flex column, 4px gap; each row flex with an
+   18px tick, 8px gap, 14px/22px text. */
+.seg8-points {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.seg8-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   font-family: var(--font-family-sans);
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
+  color: #1F1F1F;
+}
+.seg8-tick {
+  flex-shrink: 0;
+  margin-top: 2px;
   color: #1F1F1F;
 }
 
