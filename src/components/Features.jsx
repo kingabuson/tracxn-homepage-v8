@@ -31,7 +31,7 @@ const features = [
             { icon: Users, text: 'Full profiles: funding, cap tables, founders, and growth' },
             { icon: TrendingUp, text: 'Tracxn Score benchmarks every company against 1M+ peers' },
         ],
-        media: { type: 'video', src: 'https://cdn.tracxn.com/marketing-campaigns/Homepage_illustrations_iYYiQe2VRsrWsrBtEFYTi.mp4' },
+        media: { type: 'image', src: '/images/offering-1.png' },
     },
     {
         id: '02',
@@ -44,7 +44,7 @@ const features = [
             { icon: Scale, text: 'Structured filings: financials, directors, and shareholding' },
             { icon: ShieldCheck, text: 'Standardized across jurisdictions for like-for-like comparison' },
         ],
-        media: { type: 'image', src: '/images/feature-1.png' },
+        media: { type: 'image', src: '/images/offering-2.png' },
     },
     {
         id: '03',
@@ -57,7 +57,7 @@ const features = [
             { icon: BarChart3, text: 'Covers 2,500+ sectors and 30+ geographies, refreshed quarterly' },
             { icon: CalendarDays, text: 'Custom reports on niche or emerging themes, on request' },
         ],
-        media: { type: 'image', src: '/images/feature-2.png' },
+        media: { type: 'image', src: '/images/offering-3.png' },
     },
     {
         id: '04',
@@ -71,7 +71,7 @@ const features = [
             { icon: Bell, text: 'Track automatically - funding, M&A, and news roll in on their own' },
             { icon: Smartphone, text: 'Manage the full pipeline in one shared view, on web or mobile' },
         ],
-        media: { type: 'image', src: '/images/feature-3.png' },
+        media: { type: 'image', src: '/images/offering-4.png' },
     },
     {
         id: '05',
@@ -84,7 +84,7 @@ const features = [
             { icon: Download, text: 'Custom data slices built around your exact filters' },
             { icon: Server, text: 'Pre-built datasets and PoC packs to validate fit fast' },
         ],
-        media: { type: 'image', src: '/images/feature-4.png' },
+        media: { type: 'image', src: '/images/offering-5.png' },
     },
 ];
 
