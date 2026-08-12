@@ -13,15 +13,20 @@ import './CustomerSegments.css';
  * left (title + lead + CTA) that stays put, and a two-column grid of small
  * cards on the right that scrolls past it. Each card = a 24px icon inline with
  * the audience name, a dashed rule, two ticked offering points and a "Learn
- * more" link. Icons and links are all one brand blue (ACCENT) rather than a
+ * more" link. Icons are light blue, links a readable step deeper, rather than a
  * colour per card. Cards fade-and-rise into view as they scroll in.
  *
  * Media & Academia is a single clubbed audience (journalists, publications and
  * universities together).
  */
 
-// One accent for every card — the icons and links are all brand blue.
-const ACCENT = '#2563EB';
+// Light blue for the icons — they are decorative (aria-hidden) and sit beside
+// a black label, so the airy tone costs nothing in legibility.
+const ICON_BLUE = '#60A5FA';
+// The "Learn more" link is 14px text, and #60A5FA only reaches 2.5:1 on white
+// (WCAG AA wants 4.5:1). This is the same family a few steps deeper — still
+// noticeably lighter than the old #2563EB, but readable at 4.7:1.
+const LINK_BLUE = '#1B74D4';
 
 const segments = [
     {
@@ -122,7 +127,7 @@ const SegmentCard = ({ segment, index }) => {
             {/* HubSpot card anatomy: icon + title on one row, dashed divider,
                 description, then the CTA pinned to the bottom. */}
             <span className="seg8-head">
-                <Icon size={24} strokeWidth={1.9} className="seg8-ico" style={{ color: ACCENT }} aria-hidden="true" />
+                <Icon size={24} strokeWidth={1.9} className="seg8-ico" style={{ color: ICON_BLUE }} aria-hidden="true" />
                 <span className="seg8-card-title">{segment.title}</span>
             </span>
             <span className="seg8-divider" aria-hidden="true" />
@@ -135,7 +140,7 @@ const SegmentCard = ({ segment, index }) => {
                     </span>
                 ))}
             </span>
-            <span className="seg8-card-link" style={{ color: ACCENT }}>
+            <span className="seg8-card-link" style={{ color: LINK_BLUE }}>
                 Learn more
                 <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />
                 <span className="seg8-sr"> about Tracxn for {segment.title} (opens in new tab)</span>
