@@ -1,48 +1,71 @@
 /* ------------------------------------------------------------------ *
- * "Built for the entire Private Market Ecosystem" — v8 R4.
+ * "Built for the entire Private Market Ecosystem" — v8 R6 (HubSpot design).
  *
- * One-fold scroll-fade. The sticky viewport now holds the heading AND
- * the two-column grid (rail left, one audience's box-free text right),
- * sized to the viewport minus the header — so heading, categories and
- * text are all visible together while the runway scrolls past.
- * Category changes use the Apollo crossfade: text fades out in place
- * and the next fades in — no translate. No subheading, no boxes.
+ * Two-column grid: a sticky heading block on the left (title + lead +
+ * CTA) and a two-column grid of audience cards on the right that scrolls
+ * past it. Cards fade-and-rise into view as they enter (HubSpot reveal).
  * ------------------------------------------------------------------ */
 
-.segf {
+.seg8 {
+  padding: clamp(64px, 8vw, 120px) 0;
   background-color: #fcfcfc;
 }
 
-.segf-runway {
-  position: relative;
-}
-.segf-sticky {
-  position: sticky;
-  top: 64px;                       /* just below the slim header */
-  height: calc(100dvh - 64px);     /* the whole section = one fold */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: clamp(16px, 3vh, 40px) 0;
-  box-sizing: border-box;
+.seg8-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(40px, 5vw, 88px);
+  align-items: start;
 }
 
-.segf-head {
-  text-align: center;
-  max-width: 1200px;
-  /* R5: a bit more air between the h2 and the rail/text below it. */
-  margin: 0 auto clamp(40px, 7vh, 80px);
-  padding: 0 24px;
+/* Left — sticky heading block */
+.seg8-aside {
+  position: sticky;
+  top: 108px;
+  height: fit-content;
 }
-.segf-h2 {
+.seg8-h2 {
   font-family: var(--font-family-serif);
   font-weight: 400;
-  line-height: 1.2;
+  line-height: 1.15;
   color: #1a1a1a;
-  max-width: 900px;
-  margin: 0 auto;
+  margin: 0 0 18px;
+  /* Left-aligned here (the global h2 rule is centered via text-align on the
+     element; override for this layout). */
+  text-align: left !important;
+  max-width: 12ch;
 }
-.segf-sr {
+.seg8-lead {
+  font-family: var(--font-family-sans);
+  font-size: clamp(1rem, 1.2vw, 1.12rem);
+  line-height: 1.6;
+  color: #5f6368;
+  margin: 0 0 28px;
+  max-width: 30ch;
+}
+.seg8-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: #16161a;
+  color: #fff;
+  font-family: var(--font-family-sans);
+  font-weight: 500;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background .2s ease, transform .2s ease;
+}
+.seg8-cta:hover { background: #000; transform: translateY(-1px); text-decoration: none; }
+.seg8-cta svg { transition: transform .2s ease; }
+.seg8-cta:hover svg { transform: translateX(3px); }
+
+.seg8-sr {
   position: absolute;
   width: 1px; height: 1px;
   padding: 0; margin: -1px;
@@ -50,139 +73,92 @@
   white-space: nowrap; border: 0;
 }
 
-.segf-grid {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
+/* Right — 2-column grid of cards */
+.seg8-cards {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
-  gap: clamp(48px, 6vw, 96px);
-  align-items: center;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
 }
 
-/* Left rail — plain vertical list */
-.segf-rail-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.seg8-card {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
-.segf-rail-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  border-left: 2px solid #E5E7EB;
-  padding: 9px 16px;
-  cursor: pointer;
-  font-family: var(--font-family-sans);
-  font-size: 0.96rem;
-  font-weight: 400;
-  color: #9CA3AF;
-  white-space: nowrap;
-  transition: color .25s ease, border-color .25s ease;
-}
-.segf-rail-item:hover { color: #4B5563; }
-.segf-rail-item.is-active {
-  color: #111827;
-  font-weight: 600;
-  border-left-color: #111827;
-}
-
-/* Right panel — stacked absolutely, one visible at a time */
-.segf-panel {
-  position: relative;
-  /* Reserve the tallest text's height so the layout never jumps. */
-  min-height: min(360px, 48vh);
-}
-
-.segf-text {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: flex-start;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.11);
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  text-decoration: none;
+  color: inherit;
+  /* HubSpot reveal: fade + rise into view */
   opacity: 0;
-  pointer-events: none;
-  /* Apollo-style crossfade: pure in-place fade, no translate. */
-  transition: opacity .45s ease;
-  will-change: opacity;
+  transform: translateY(26px);
+  transition: opacity .6s ease, transform .6s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow .25s ease, border-color .25s ease;
+  will-change: opacity, transform;
 }
-.segf-text.is-active {
+.seg8-card.is-in {
   opacity: 1;
-  pointer-events: auto;
+  transform: none;
+}
+.seg8-card:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 44px -24px rgba(10, 31, 68, 0.32);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .segf-text { transition: opacity .25s ease; }
+  .seg8-card { transition: box-shadow .25s ease, border-color .25s ease; opacity: 1; transform: none; }
 }
 
-.segf-title {
+.seg8-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.seg8-card-title {
   font-family: var(--font-family-serif);
   font-weight: 400;
-  font-size: clamp(1.4rem, 2vw, 1.9rem);
+  font-size: 1.35rem;
   line-height: 1.25;
   letter-spacing: -0.01em;
   color: #111827;
-  margin: 0 0 10px;
+  margin: 0 0 8px;
 }
 
-.segf-line {
+.seg8-card-line {
   font-family: var(--font-family-sans);
-  font-size: 1rem;
+  font-size: 0.96rem;
   line-height: 1.5;
   color: #5f6368;
-  margin: 0 0 clamp(14px, 2vh, 22px);
-  max-width: 560px;
-}
-
-.segf-rows {
-  list-style: none;
   margin: 0 0 18px;
-  padding: 0;
-  max-width: 560px;
+  flex: 1;
 }
-.segf-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 11px 0;
-  border-top: 1px solid #E9EBF0;
-  font-family: var(--font-family-sans);
-  font-size: 0.95rem;
-  line-height: 1.45;
-  color: #202124;
-}
-.segf-row:last-child { border-bottom: 1px solid #E9EBF0; }
-.segf-row-arrow { flex-shrink: 0; margin-top: 2px; color: #2166b0; }
 
-.segf-link {
+.seg8-card-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-family: var(--font-family-sans);
   font-weight: 600;
-  font-size: 0.96rem;
-  color: #0b3d91;
-  text-decoration: none;
-  width: fit-content;
-  padding: 6px 0;
+  font-size: 0.95rem;
 }
-.segf-link:hover { text-decoration: underline; }
+.seg8-card-link svg { transition: transform .2s ease; }
+.seg8-card:hover .seg8-card-link svg { transform: translateX(3px); }
 
 /* ---- Responsive --------------------------------------------------- */
-@media (max-width: 860px) {
-  .segf-grid {
-    grid-template-columns: 1fr;
-    gap: 0;
-    align-items: start;
-  }
-  /* The text block's own title carries the category name on phones. */
-  .segf-rail { display: none; }
-  .segf-sticky { top: 60px; height: calc(100dvh - 60px); }
-  .segf-panel { min-height: min(420px, 60vh); }
+@media (max-width: 980px) {
+  .seg8-inner { grid-template-columns: 1fr; gap: 32px; }
+  .seg8-aside { position: static; }
+  .seg8-h2 { max-width: none; text-align: center !important; }
+  .seg8-lead { max-width: none; margin-left: auto; margin-right: auto; }
+  .seg8-aside { text-align: center; }
+}
+@media (max-width: 620px) {
+  .seg8-cards { grid-template-columns: 1fr; }
 }

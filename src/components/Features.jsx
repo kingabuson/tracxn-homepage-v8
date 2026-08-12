@@ -170,16 +170,13 @@ const Features = () => {
                             })}
                         </div>
 
-                        {/* Horizontal track — slides one viewport per step */}
-                        <div className="ftx-viewport">
-                            <div
-                                className="ftx-track"
-                                style={{ transform: `translateX(-${active * 100}%)` }}
-                            >
+                        {/* Crossfading stage — panels stacked, active fades in
+                            (Apollo: text + media fade out/in on scroll). */}
+                        <div className="ftx-stage">
                                 {features.map((f, i) => (
                                     <div
                                         key={f.id}
-                                        className="ftx-slide"
+                                        className={`ftx-slide${i === active ? ' is-active' : ''}`}
                                         role="tabpanel"
                                         id={`ftx-panel-${f.id}`}
                                         aria-labelledby={`ftx-tab-${f.id}`}
@@ -240,7 +237,6 @@ const Features = () => {
                                         </div>
                                     </div>
                                 ))}
-                            </div>
                         </div>
                     </div>
                 </div>

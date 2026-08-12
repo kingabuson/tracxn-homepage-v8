@@ -15,9 +15,8 @@
   /* Google Light Grey Background */
   --color-border: #dadce0;
 
-  /* Theme Gradient — v8 R5: all-blue Material ramp
-     (#0D47A1 → #2196F3 → #90CAF9 → #E3F2FD), symmetric so it animates. */
-  --theme-gradient: linear-gradient(90deg, #0D47A1 0%, #2196F3 30%, #90CAF9 45%, #E3F2FD 50%, #90CAF9 55%, #2196F3 70%, #0D47A1 100%);
+  /* Theme Gradient — accent word ("Count On"): readable blue sweep. */
+  --theme-gradient: linear-gradient(90deg, #0D47A1 0%, #2196F3 50%, #0D47A1 100%);
 
   /* Accent Colors for Features */
   --color-accent-1: #003366;
@@ -168,10 +167,11 @@ button {
   animation: gradient-shift 8s linear infinite;
 }
 
-/* Specific Gradient for Testimonials — v8 R5: all-blue Material ramp, dark
-   base with a bright #E3F2FD glint sweeping through the heading. */
+/* Specific Gradient for Testimonials — v8 R6: near-black base so the WHOLE
+   word isn't blue; a blue band (Material ramp) passes THROUGH it as it
+   animates (background-size 200% + gradient-shift). */
 .text-gradient-testimonial {
-  background-image: linear-gradient(90deg, #0D47A1 0%, #2196F3 28%, #90CAF9 43%, #E3F2FD 50%, #90CAF9 57%, #2196F3 72%, #0D47A1 100%);
+  background-image: linear-gradient(90deg, #1a1a1a 0%, #1a1a1a 24%, #0D47A1 38%, #2196F3 46%, #90CAF9 50%, #2196F3 54%, #0D47A1 62%, #1a1a1a 76%, #1a1a1a 100%);
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
@@ -182,9 +182,8 @@ button {
 
 /* Shimmer Gradient for Stats */
 .text-shimmer-theme {
-  /* v8 R5: all-blue Material ramp — dark base with a bright #E3F2FD shimmer
-     band passing through. */
-  background-image: linear-gradient(110deg, #0D47A1 34%, #2196F3 44%, #90CAF9 49%, #E3F2FD 51%, #90CAF9 53%, #2196F3 58%, #0D47A1 66%);
+  /* v8 R6: near-black base with a blue shimmer band passing through. */
+  background-image: linear-gradient(110deg, #1a1a1a 36%, #0D47A1 44%, #2196F3 48%, #90CAF9 50%, #2196F3 52%, #0D47A1 56%, #1a1a1a 64%);
   background-size: 250% auto;
   background-clip: text;
   -webkit-background-clip: text;

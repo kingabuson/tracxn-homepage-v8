@@ -1,244 +1,144 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
+import {
+    Rocket, TrendingUp, Briefcase, Landmark, GitMerge, Lightbulb,
+    Building2, Newspaper, ArrowRight,
+} from 'lucide-react';
 import './CustomerSegments.css';
 
 /**
- * "Built for the entire Private Market Ecosystem" — v8 R3.
+ * "Built for the entire Private Market Ecosystem" — v8 R6.
  *
- * Scroll-driven, box-free. A sticky viewport holds two columns: the nine
- * audiences as a vertical list on the left, and ONE audience's text on the
- * right — serif heading, one-line proposition, three arrow rows, a quiet
- * "Learn more" link. No cards, borders or fills.
+ * HubSpot's "Growing a business is hard" layout: a sticky heading block on the
+ * left (title + lead + CTA) that stays put, and a two-column grid of small
+ * cards on the right that scrolls past it. Each card = a coloured icon tile,
+ * the audience name, a one-line proposition and a "Learn more" link. Cards
+ * fade-and-rise into view as they scroll in (HubSpot's reveal), staggered.
  *
- * The section is tall (one scroll "step" per audience); as the user scrolls,
- * the active audience advances and the text crossfades — outgoing drifts up
- * and fades, incoming rises in — while the rail highlight follows. Clicking a
- * rail item scrolls the window to that audience's step.
+ * Media & Academia is a single clubbed audience (journalists, publications and
+ * universities together).
  */
 
 const segments = [
     {
         id: 'vc',
         title: 'Venture Capital',
-        link: 'https://w.tracxn.com/customers/solutions-for-venture-capital-funds',
         line: 'Find high-potential startups early — and move before the round is announced.',
-        offerings: [
-            'Proprietary sourcing across 8M+ companies and 100+ filters',
-            'Real-time funding, founder and hiring signals',
-            'Portfolio and competitor tracking on autopilot',
-        ],
+        link: 'https://w.tracxn.com/customers/solutions-for-venture-capital-funds',
+        icon: Rocket,
+        color: '#2563EB',
     },
     {
         id: 'pe',
         title: 'Private Equity & Growth',
-        link: 'https://w.tracxn.com/customers/solutions-for-private-equity-funds',
         line: 'Find buyout and growth targets, then diligence them properly.',
-        offerings: [
-            'Screen growth-stage targets by sector, geography and traction',
-            'Verified financials and cap tables for diligence',
-            'Track sector consolidation and comparable deals',
-        ],
+        link: 'https://w.tracxn.com/customers/solutions-for-private-equity-funds',
+        icon: TrendingUp,
+        color: '#7C3AED',
     },
     {
         id: 'ib',
         title: 'Investment Banks',
-        link: 'https://w.tracxn.com/customers/solutions-for-investment-banks',
         line: 'Win mandates and execute them on private-market evidence.',
-        offerings: [
-            'Build buyer and target lists in minutes',
-            'Comparable deals and valuation benchmarks',
-            'Live coverage of every sector you pitch',
-        ],
+        link: 'https://w.tracxn.com/customers/solutions-for-investment-banks',
+        icon: Briefcase,
+        color: '#0EA5E9',
     },
     {
         id: 'banks',
         title: 'Banks & NBFCs',
-        link: 'https://w.tracxn.com/customers/solutions-for-banks-and-nbfcs',
         line: 'Acquire borrowers and underwrite them on verified filings.',
-        offerings: [
-            'Source SME and corporate borrowers at scale',
-            'Regulatory filings and financial-health checks',
-            'Portfolio monitoring with early-warning signals',
-        ],
+        link: 'https://w.tracxn.com/customers/solutions-for-banks-and-nbfcs',
+        icon: Landmark,
+        color: '#059669',
     },
     {
         id: 'corpdev',
         title: 'Corporate M&A & Strategy',
-        link: 'https://w.tracxn.com/customers/solutions-for-corporate-dev-and-ma-team',
         line: 'Screen targets and track consolidation across your industry.',
-        offerings: [
-            'Map targets across 2,500+ sectors and 30+ geographies',
-            'Track competitor M&A, funding and launches',
-            'Diligence-ready profiles for every shortlist',
-        ],
+        link: 'https://w.tracxn.com/customers/solutions-for-corporate-dev-and-ma-team',
+        icon: GitMerge,
+        color: '#DB2777',
     },
     {
         id: 'innovation',
         title: 'Corporate Innovation',
-        link: 'https://w.tracxn.com/customers/solutions-for-corporate-innovation',
         line: 'Track emerging technology and the startups worth partnering with.',
-        offerings: [
-            'Scout startups across 3,000+ emerging sectors',
-            'Monitor technology themes as they take off',
-            'Build and manage a partnership pipeline',
-        ],
+        link: 'https://w.tracxn.com/customers/solutions-for-corporate-innovation',
+        icon: Lightbulb,
+        color: '#EA580C',
     },
     {
         id: 'government',
         title: 'Government & Public Sector',
-        link: 'https://w.tracxn.com/customers/tracxn-for-government',
         line: 'Map, benchmark and grow your regional startup ecosystem.',
-        offerings: [
-            'Benchmark your ecosystem against peer geographies',
-            'Track capital flowing into the region',
-            'Identify companies worth supporting and funding',
-        ],
+        link: 'https://w.tracxn.com/customers/tracxn-for-government',
+        icon: Building2,
+        color: '#0891B2',
     },
     {
-        id: 'universities',
-        title: 'Universities',
-        link: 'https://w.tracxn.com/customers',
-        line: 'Research and teach the innovation economy on data that holds up.',
-        offerings: [
-            'Verified datasets for academic research',
-            'Sector taxonomies covering 3,000+ emerging markets',
-            'Funding and exit data ready to cite',
-        ],
-    },
-    {
-        id: 'journalists',
-        title: 'Journalists & Publications',
+        id: 'media',
+        title: 'Media & Academia',
+        line: 'Report and research the innovation economy on data that holds up.',
         link: 'https://w.tracxn.com/customers/solutions-for-journalists-publications',
-        line: 'Report on startups and funding with data that holds up.',
-        offerings: [
-            'Funding, M&A and IPO datasets to cite',
-            'Human-verified company profiles for fact-checking',
-            'Sector reports and trend data for context',
-        ],
+        icon: Newspaper,
+        color: '#CA8A04',
     },
 ];
 
-// Scroll distance per audience. Enough that each one gets a real dwell,
-// small enough that nine steps don't feel like a canyon.
-const STEP_VH = 52;
-
-const CustomerSegments = () => {
-    const [active, setActive] = useState(0);
-    const scrollRef = useRef(null);
-    const stickyRef = useRef(null);
-    const count = segments.length;
-
-    // Map scroll progress through the tall wrapper → active index.
-    const onScroll = useCallback(() => {
-        const wrap = scrollRef.current;
-        const sticky = stickyRef.current;
-        if (!wrap || !sticky) return;
-        const rect = wrap.getBoundingClientRect();
-        const travel = rect.height - sticky.getBoundingClientRect().height;
-        if (travel <= 0) return;
-        const progress = Math.min(1, Math.max(0, -rect.top / travel));
-        const idx = Math.min(count - 1, Math.floor(progress * count));
-        setActive(idx);
-    }, [count]);
-
-    useEffect(() => {
-        onScroll();
-        window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', onScroll);
-        return () => {
-            window.removeEventListener('scroll', onScroll);
-            window.removeEventListener('resize', onScroll);
-        };
-    }, [onScroll]);
-
-    // Rail click → scroll the window to that audience's step (mid-step so the
-    // floor() lands squarely on it).
-    const jumpTo = (i) => {
-        const wrap = scrollRef.current;
-        const sticky = stickyRef.current;
-        if (!wrap || !sticky) return;
-        const travel = wrap.offsetHeight - sticky.offsetHeight;
-        const top = window.scrollY + wrap.getBoundingClientRect().top;
-        window.scrollTo({
-            top: top + ((i + 0.5) / count) * travel,
-            behavior: 'smooth',
-        });
-    };
+const SegmentCard = ({ segment, index }) => {
+    const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2, rootMargin: '0px 0px -40px 0px' });
+    const Icon = segment.icon;
+    const tint = `${segment.color}14`; // ~8% alpha
 
     return (
-        <section className="segf">
-            {/* Tall scroll runway; everything — heading, rail and text — lives
-                inside the sticky viewport so the whole section stays in one
-                fold while the runway scrolls past. */}
-            <div
-                ref={scrollRef}
-                className="segf-runway"
-                style={{ height: `calc(${count * STEP_VH}vh)` }}
-            >
-                <div ref={stickyRef} className="segf-sticky">
-                    <div className="segf-head">
-                        <h2 className="segf-h2">
-                            Built for the entire{' '}
-                            <span className="text-gradient-testimonial">Private Market Ecosystem</span>
-                        </h2>
-                    </div>
-                    <div className="segf-grid">
-                        {/* Left: vertical list of audiences */}
-                        <nav className="segf-rail" aria-label="Audiences">
-                            <ul className="segf-rail-list">
-                                {segments.map((s, i) => (
-                                    <li key={s.id}>
-                                        <button
-                                            type="button"
-                                            className={`segf-rail-item${active === i ? ' is-active' : ''}`}
-                                            onClick={() => jumpTo(i)}
-                                            aria-current={active === i}
-                                        >
-                                            {s.title}
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        </nav>
+        <a
+            ref={ref}
+            className={`seg8-card${inView ? ' is-in' : ''}`}
+            href={segment.link}
+            target="_blank"
+            rel="noreferrer"
+            style={{ transitionDelay: `${(index % 2) * 80 + Math.floor(index / 2) * 40}ms` }}
+        >
+            <span className="seg8-ico" style={{ background: tint, color: segment.color }}>
+                <Icon size={24} strokeWidth={1.9} aria-hidden="true" />
+            </span>
+            <h3 className="seg8-card-title">{segment.title}</h3>
+            <p className="seg8-card-line">{segment.line}</p>
+            <span className="seg8-card-link" style={{ color: segment.color }}>
+                Learn more
+                <ArrowRight size={16} strokeWidth={2.2} aria-hidden="true" />
+                <span className="seg8-sr"> about Tracxn for {segment.title} (opens in new tab)</span>
+            </span>
+        </a>
+    );
+};
 
-                        {/* Right: one audience's text at a time, crossfading */}
-                        <div className="segf-panel" aria-live="polite">
-                            {segments.map((s, i) => {
-                                const state =
-                                    i === active ? 'is-active' : i < active ? 'is-before' : 'is-after';
-                                return (
-                                    <div key={s.id} className={`segf-text ${state}`} aria-hidden={i !== active}>
-                                        <h3 className="segf-title">{s.title}</h3>
-                                        <p className="segf-line">{s.line}</p>
-                                        <ul className="segf-rows">
-                                            {s.offerings.map((o, oi) => (
-                                                <li key={oi} className="segf-row">
-                                                    <ArrowRight
-                                                        size={17}
-                                                        strokeWidth={2.2}
-                                                        className="segf-row-arrow"
-                                                        aria-hidden="true"
-                                                    />
-                                                    <span>{o}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                        <a
-                                            className="segf-link"
-                                            href={s.link}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            tabIndex={i === active ? 0 : -1}
-                                        >
-                                            Learn more
-                                            <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
-                                            <span className="segf-sr"> about Tracxn for {s.title} (opens in new tab)</span>
-                                        </a>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+const CustomerSegments = () => {
+    return (
+        <section className="seg8">
+            <div className="seg8-inner">
+                {/* Left: sticky heading block */}
+                <aside className="seg8-aside">
+                    <h2 className="seg8-h2">
+                        Built for the entire{' '}
+                        <span className="text-gradient-testimonial">Private Market Ecosystem</span>
+                    </h2>
+                    <p className="seg8-lead">
+                        Investors, corporates, banks, NBFCs, and governments run their
+                        private-market work on Tracxn.
+                    </p>
+                    <a className="seg8-cta" href="#hero-demo">
+                        Get a demo
+                        <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
+                    </a>
+                </aside>
+
+                {/* Right: scrolling grid of audience cards */}
+                <div className="seg8-cards">
+                    {segments.map((s, i) => (
+                        <SegmentCard key={s.id} segment={s} index={i} />
+                    ))}
                 </div>
             </div>
         </section>
