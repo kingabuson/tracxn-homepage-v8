@@ -23,7 +23,8 @@ const features = [
         id: '01',
         title: 'Rich Firmographic Data',
         heading: '8M+ companies. One data layer deep enough to trust.',
-        pill: '#F7FD26',
+        // Swapped with Workflow Solutions: this pill takes the light blue.
+        pill: '#C6DCFB',
         cardBg: '#3F3935',
         bullets: [
             { icon: Building2, text: '8M+ companies across 3,000+ sectors and 100+ countries' },
@@ -62,7 +63,8 @@ const features = [
         id: '04',
         title: 'Workflow Solutions',
         heading: 'Stop juggling five tools to run one deal.',
-        pill: '#C6DCFB',
+        // Light pastel yellow (replaces the neon yellow that moved off tab 1).
+        pill: '#FAF2B8',
         cardBg: '#202929',
         bullets: [
             { icon: Filter, text: 'Source proactively - screen 7.7M+ companies across 100+ filters' },

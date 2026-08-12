@@ -169,7 +169,7 @@ const CustomerSegments = () => {
                         private-market work on Tracxn.
                     </p>
                     <a className="seg8-cta" href="#hero-demo">
-                        Get a demo
+                        Schedule a demo
                         <ArrowRight size={18} strokeWidth={2} aria-hidden="true" />
                     </a>
                 </aside>
