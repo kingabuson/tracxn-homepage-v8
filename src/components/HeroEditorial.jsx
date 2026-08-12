@@ -230,7 +230,9 @@ const styles = {
         width: 'auto',
         height: 'auto',
         maxWidth: '100%',
-        maxHeight: 'min(44vh, 430px)',
+        // Bumped up after the grey oval was removed — the artwork's visual
+        // footprint shrank, so it can carry more height inside the same fold.
+        maxHeight: 'min(54vh, 540px)',
         objectFit: 'contain',
         display: 'block',
         marginLeft: 'auto',
