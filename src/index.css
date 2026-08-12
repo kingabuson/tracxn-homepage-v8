@@ -90,10 +90,10 @@ h1 {
 }
 
 h2 {
-  /* v8: all section h2s (R5: bumped up — responsive.css !important is the
-     effective size, this is the non-media-query fallback). */
-  font-size: 3.2rem;
-  line-height: 1.3;
+  /* v8 R7: HubSpot h2 size (40px). responsive.css !important is the effective
+     value; this is the non-media-query fallback. */
+  font-size: 2.5rem;
+  line-height: 1.1;
   text-align: center;
   max-width: 900px;
   margin-left: auto;

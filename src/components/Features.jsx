@@ -182,58 +182,79 @@ const Features = () => {
                                         aria-labelledby={`ftx-tab-${f.id}`}
                                         aria-hidden={i !== active}
                                     >
+                                        {/* Apollo reveal: every group sits in an
+                                            overflow:hidden mask and its inner
+                                            content rises from translateY(100%)
+                                            (below the baseline) to 0. */}
                                         <div className="ftx-copy">
-                                            <h3 className="ftx-headline">{f.heading}</h3>
-
-                                            <div className="ftx-ctas">
-                                                <a
-                                                    href="#signup"
-                                                    className="ftx-btn-dark"
-                                                    tabIndex={i === active ? 0 : -1}
-                                                >
-                                                    Get started for free
-                                                </a>
-                                                <a
-                                                    href="#offerings"
-                                                    className="ftx-btn-outline"
-                                                    tabIndex={i === active ? 0 : -1}
-                                                >
-                                                    Learn more
-                                                </a>
+                                            <div className="ftx-mask ftx-mask--headline">
+                                                <div className="ftx-rise">
+                                                    <h3 className="ftx-headline">{f.heading}</h3>
+                                                </div>
                                             </div>
 
-                                            <ul className="ftx-points">
-                                                {f.bullets.map((b, bi) => {
-                                                    const Icon = b.icon;
-                                                    return (
-                                                        <li key={bi} className="ftx-point">
-                                                            <Icon size={19} strokeWidth={1.7} className="ftx-point-icon" aria-hidden="true" />
-                                                            <span>{b.text}</span>
-                                                        </li>
-                                                    );
-                                                })}
-                                            </ul>
+                                            <div className="ftx-mask ftx-mask--ctas">
+                                                <div className="ftx-rise">
+                                                    <div className="ftx-ctas">
+                                                        <a
+                                                            href="#signup"
+                                                            className="ftx-btn-dark"
+                                                            tabIndex={i === active ? 0 : -1}
+                                                        >
+                                                            Get started for free
+                                                        </a>
+                                                        <a
+                                                            href="#offerings"
+                                                            className="ftx-btn-outline"
+                                                            tabIndex={i === active ? 0 : -1}
+                                                        >
+                                                            Learn more
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* All bullets rise together, as one block. */}
+                                            <div className="ftx-mask ftx-mask--points">
+                                                <div className="ftx-rise">
+                                                    <ul className="ftx-points">
+                                                        {f.bullets.map((b, bi) => {
+                                                            const Icon = b.icon;
+                                                            return (
+                                                                <li key={bi} className="ftx-point">
+                                                                    <Icon size={19} strokeWidth={1.7} className="ftx-point-icon" aria-hidden="true" />
+                                                                    <span>{b.text}</span>
+                                                                </li>
+                                                            );
+                                                        })}
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
 
+                                        {/* The media card is itself the mask: the
+                                            shot slides up inside the dark box. */}
                                         <div className="ftx-media" style={{ background: f.cardBg }}>
-                                            {f.media.type === 'video' ? (
-                                                <video
-                                                    className="ftx-media-shot"
-                                                    src={f.media.src}
-                                                    autoPlay
-                                                    muted
-                                                    loop
-                                                    playsInline
-                                                    aria-label={`${f.title} demo`}
-                                                />
-                                            ) : (
-                                                <img
-                                                    className="ftx-media-shot"
-                                                    src={f.media.src}
-                                                    alt={`${f.title} interface`}
-                                                    loading="lazy"
-                                                />
-                                            )}
+                                            <div className="ftx-rise ftx-media-rise">
+                                                {f.media.type === 'video' ? (
+                                                    <video
+                                                        className="ftx-media-shot"
+                                                        src={f.media.src}
+                                                        autoPlay
+                                                        muted
+                                                        loop
+                                                        playsInline
+                                                        aria-label={`${f.title} demo`}
+                                                    />
+                                                ) : (
+                                                    <img
+                                                        className="ftx-media-shot"
+                                                        src={f.media.src}
+                                                        alt={`${f.title} interface`}
+                                                        loading="lazy"
+                                                    />
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

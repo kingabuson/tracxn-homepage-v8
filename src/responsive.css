@@ -37,10 +37,11 @@ button,
    several sections hard-code `fontSize: '3.5rem'` inline, which would otherwise
    stay 56px on a 375px screen. */
 h2 {
-    /* v8: global h2 size — the !important wins over the sections that
-       hard-code fontSize inline, so this is the one knob for every h2.
-       R5: bumped up so every section heading reads larger. */
-    font-size: clamp(1.9rem, 4vw, 3.2rem) !important;
+    /* v8 R7: HubSpot's h2 size — 40px at desktop (they use 40px/44px), fluid
+       down on small screens. The !important wins over sections that hard-code
+       fontSize inline, so this is the one knob for every h2. */
+    font-size: clamp(1.6rem, 2.9vw, 2.5rem) !important;
+    line-height: 1.1 !important;
 }
 
 @media (max-width: 768px) {

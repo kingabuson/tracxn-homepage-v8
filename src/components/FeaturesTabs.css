@@ -127,8 +127,35 @@
   pointer-events: auto;
 }
 
+/* ---- Apollo reveal ------------------------------------------------
+   Each group is an overflow:hidden mask; its inner .ftx-rise sits at
+   translateY(100%) (fully below the mask's baseline, so clipped out of
+   sight) and rises to 0 when the panel becomes active. Groups are
+   staggered so the headline leads, then the buttons, then the bullets. */
+.ftx-mask {
+  overflow: hidden;
+}
+.ftx-mask--ctas { margin-top: clamp(24px, 4vh, 40px); }
+.ftx-mask--points {
+  margin-top: auto;      /* keeps the bullets pinned to the column bottom */
+  padding-top: clamp(24px, 4vh, 48px);
+}
+
+.ftx-rise {
+  transform: translateY(100%);
+  transition: transform .75s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.ftx-slide.is-active .ftx-rise { transform: translateY(0); }
+
+/* Stagger: headline first, then CTAs, then the bullet block. */
+.ftx-slide.is-active .ftx-mask--headline .ftx-rise { transition-delay: .05s; }
+.ftx-slide.is-active .ftx-mask--ctas .ftx-rise    { transition-delay: .14s; }
+.ftx-slide.is-active .ftx-mask--points .ftx-rise  { transition-delay: .22s; }
+
 @media (prefers-reduced-motion: reduce) {
   .ftx-slide { transition: opacity .25s ease; }
+  .ftx-rise { transform: none !important; transition: none !important; }
 }
 
 /* Left column — headline + CTAs top, icon bullets pinned to the bottom */
@@ -147,7 +174,8 @@
   line-height: 1.18;
   letter-spacing: -0.01em;
   color: #1a1a1a;
-  margin: 0 0 clamp(24px, 4vh, 40px);
+  /* Spacing between groups now lives on the masks, not the headline. */
+  margin: 0;
   text-wrap: balance;
 }
 
@@ -186,8 +214,8 @@
 
 .ftx-points {
   list-style: none;
-  margin: auto 0 0;   /* pinned to the bottom of the column */
-  padding: clamp(24px, 4vh, 48px) 0 0;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -222,13 +250,21 @@
   border-radius: 14px;
   overflow: hidden;
 }
+/* The shot slides up inside the dark card (the card is the mask). */
+.ftx-media-rise {
+  position: absolute;
+  inset: 0;
+}
 .ftx-media-shot {
   position: absolute;
-  top: 50%;
+  /* Apollo insets the screenshot generously — ~13% dark band top and
+     bottom, a small left margin, and it bleeds off the right edge. */
+  top: 13%;
+  bottom: 13%;
   right: 0;
-  transform: translateY(-50%);
-  width: 94%;
-  height: calc(100% - clamp(88px, 16%, 150px));
+  left: 4%;
+  width: auto;
+  height: 74%;
   object-fit: cover;
   object-position: left top;
   border-radius: 8px 0 0 8px;
