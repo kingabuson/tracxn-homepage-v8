@@ -212,12 +212,14 @@ const styles = {
         minHeight: 0,
     },
     top: {
-        flex: '1 1 56%',
+        flex: '1 1 44%',
         minWidth: 0,
         maxWidth: '780px',
     },
     media: {
-        flex: '1 1 44%',
+        // Widened: the illustration was capped by this column's WIDTH, not by
+        // its height cap, leaving vertical room unused.
+        flex: '1 1 56%',
         minWidth: 0,
         display: 'flex',
         justifyContent: 'flex-end',
@@ -227,12 +229,15 @@ const styles = {
         // Height-capped in vh so the illustration shrinks on short viewports
         // instead of forcing the hero taller and pushing the chips below the
         // fold. width:auto keeps it proportional under the height cap.
-        width: 'auto',
+        // width:auto meant the <img> never scaled ABOVE its intrinsic 601x491,
+        // so the column had spare room it could not use. Filling the column
+        // lets it scale up; the maxHeight cap + object-fit keep it contained.
+        width: '100%',
         height: 'auto',
         maxWidth: '100%',
         // Bumped up after the grey oval was removed — the artwork's visual
         // footprint shrank, so it can carry more height inside the same fold.
-        maxHeight: 'min(54vh, 540px)',
+        maxHeight: 'min(62vh, 620px)',
         objectFit: 'contain',
         display: 'block',
         marginLeft: 'auto',
