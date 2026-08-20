@@ -107,15 +107,20 @@
   opacity: 0;
   transform: translateY(26px);
   transition: opacity .6s ease, transform .6s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow .25s ease, border-color .25s ease;
+              box-shadow .25s ease, border-color .25s ease,
+              background-color .25s ease;
   will-change: opacity, transform;
 }
 .seg8-card.is-in {
   opacity: 1;
   transform: none;
 }
+/* Hover: every card washes to the same soft blue (the icon-blue family, a few
+   steps paler) so the whole grid lights up identically on touch. Dark card copy
+   (#1F1F1F) stays fully readable on it. */
 .seg8-card:hover {
-  border-color: rgba(0, 0, 0, 0.2);
+  background-color: #eef4ff;
+  border-color: rgba(37, 99, 235, 0.22);
   box-shadow: 0 20px 44px -24px rgba(10, 31, 68, 0.32);
 }
 /* No underline anywhere in the card on hover. */
